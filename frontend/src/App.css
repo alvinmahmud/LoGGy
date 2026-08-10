@@ -878,6 +878,24 @@ footer p {
   line-height: 1.4;
 }
 
+.availability-status {
+  display: block;
+  min-height: 14px;
+  transition: color 180ms ease;
+}
+
+.availability-status.checking {
+  color: var(--muted);
+}
+
+.availability-status.available {
+  color: #3f745c;
+}
+
+.availability-status.taken {
+  color: #a13f2a;
+}
+
 .password-field {
   position: relative;
 }
@@ -913,16 +931,6 @@ footer p {
 
 .password-toggle svg {
   display: block;
-}
-
-.form-error,
-.api-message {
-  color: #a13f2a;
-  font-size: 12px;
-}
-
-.form-error {
-  margin: 0;
 }
 
 .auth-submit {
@@ -981,24 +989,6 @@ footer p {
 .account-chip button:hover {
   color: var(--orange);
   border-color: currentColor;
-}
-
-.api-message {
-  margin: -12px 0 24px;
-  padding: 11px 14px;
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  border-left: 3px solid var(--orange);
-  background: #f1e5dc;
-}
-
-.api-message button {
-  border: 0;
-  background: transparent;
-  color: inherit;
-  display: grid;
-  place-items: center;
 }
 
 .library-loading {

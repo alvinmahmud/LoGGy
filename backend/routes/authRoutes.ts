@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  checkAvailability,
   getCurrentUser,
   googleLogin,
   logout,
@@ -7,10 +8,14 @@ import {
   register,
 } from "../controllers/authController";
 import { requireAuth } from "../middleware/auth";
-import { authRateLimit } from "../middleware/authRateLimit";
+import {
+  authRateLimit,
+  availabilityRateLimit,
+} from "../middleware/authRateLimit";
 
 const router = Router();
 
+router.get("/availability", availabilityRateLimit, checkAvailability);
 router.post("/register", authRateLimit, register);
 router.post("/login", authRateLimit, passwordLogin);
 router.post("/google", authRateLimit, googleLogin);

@@ -1,0 +1,89 @@
+.banner {
+  position: fixed;
+  left: 50%;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 1000;
+  width: min(440px, calc(100vw - 32px));
+  padding: 13px 14px;
+  display: grid;
+  grid-template-columns: 20px 1fr auto;
+  align-items: start;
+  gap: 10px;
+  border: 1px solid;
+  border-radius: 10px;
+  box-shadow: 0 16px 42px rgba(40, 38, 33, 0.2);
+  animation: banner-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.banner-success {
+  border-color: #a8c7b7;
+  background: #e8f1ec;
+  color: #315d48;
+}
+
+.banner-error {
+  border-color: #d9ada1;
+  background: #f5e7e2;
+  color: #923d2c;
+}
+
+.banner-icon {
+  margin-top: 1px;
+}
+
+.banner-copy {
+  min-width: 0;
+}
+
+.banner-copy strong {
+  display: block;
+  color: currentColor;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.banner-copy p {
+  margin: 3px 0 0;
+  color: currentColor;
+  font-size: 11px;
+  line-height: 1.45;
+  opacity: 0.82;
+}
+
+.banner-dismiss {
+  width: 26px;
+  height: 26px;
+  margin: -4px -5px 0 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: currentColor;
+}
+
+.banner-dismiss:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.banner-dismiss:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 1px;
+}
+
+@keyframes banner-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .banner {
+    animation-duration: 1ms;
+  }
+}

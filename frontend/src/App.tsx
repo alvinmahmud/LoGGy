@@ -16,11 +16,18 @@ import {
   type ApiMediaItem,
   type User,
 } from "./api";
+import { Banner, type BannerTone } from "./components/Banner";
 import "./App.css";
 
 type MediaType = ApiMediaItem["type"];
 type Status = ApiMediaItem["status"];
 type NewMediaItem = Omit<ApiMediaItem, "_id" | "createdAt">;
+type AuthAction = "register" | "login" | "google";
+type AvailabilityState = "idle" | "checking" | "available" | "taken";
+type Notice = { tone: BannerTone; title: string; message: string };
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const usernamePattern = /^[A-Za-z0-9_]{3,24}$/;
 
 const typeLabels: Record<MediaType, string> = {
   movie: "Film",
@@ -44,6 +51,13 @@ function App() {
   const [user, setUser] = useState<User | null>(null);
   const [checkingSession, setCheckingSession] = useState(true);
   const [sessionError, setSessionError] = useState("");
+  const [notice, setNotice] = useState<Notice | null>(null);
+
+  useEffect(() => {
+    if (!notice) return;
+    const timeout = window.setTimeout(() => setNotice(null), 5500);
+    return () => window.clearTimeout(timeout);
+  }, [notice]);
 
   useEffect(() => {
     authApi
@@ -64,15 +78,33 @@ function App() {
     return (
       <SignInScreen
         initialError={sessionError}
-        onAuthenticated={(authenticatedUser) => {
+        onAuthenticated={(authenticatedUser, action) => {
           setSessionError("");
+          setNotice({
+            tone: "success",
+            title: action === "register" ? "Account created" : "Welcome back",
+            message:
+              action === "register"
+                ? `Your library is ready, ${authenticatedUser.username}.`
+                : `You’re signed in as ${authenticatedUser.username}.`,
+          });
           setUser(authenticatedUser);
         }}
       />
     );
   }
 
-  return <Library user={user} onSignedOut={() => setUser(null)} />;
+  return (
+    <Library
+      user={user}
+      notice={notice}
+      onDismissNotice={() => setNotice(null)}
+      onSignedOut={() => {
+        setNotice(null);
+        setUser(null);
+      }}
+    />
+  );
 }
 
 function LoadingScreen() {
@@ -89,7 +121,7 @@ function SignInScreen({
   onAuthenticated,
 }: {
   initialError: string;
-  onAuthenticated: (user: User) => void;
+  onAuthenticated: (user: User, action: AuthAction) => void;
 }) {
   const [mode, setMode] = useState<"register" | "login">("register");
   const [username, setUsername] = useState("");
@@ -100,28 +132,125 @@ function SignInScreen({
   const [showPasswordConfirmation, setShowPasswordConfirmation] =
     useState(false);
   const [error, setError] = useState(initialError);
+  const [usernameAvailability, setUsernameAvailability] =
+    useState<AvailabilityState>("idle");
+  const [emailAvailability, setEmailAvailability] =
+    useState<AvailabilityState>("idle");
   const [submitting, setSubmitting] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const [formHeight, setFormHeight] = useState(430);
 
   useLayoutEffect(() => {
     if (formRef.current) setFormHeight(formRef.current.scrollHeight);
-  }, [mode, error]);
+  }, [mode, usernameAvailability, emailAvailability]);
+
+  async function checkUsernameAvailability() {
+    const normalizedUsername = username.trim();
+    if (!usernamePattern.test(normalizedUsername)) {
+      setUsernameAvailability("idle");
+
+      return;
+    }
+
+    setUsernameAvailability("checking");
+    try {
+      const result = await authApi.availability({
+        username: normalizedUsername,
+      });
+      setUsernameAvailability(
+        result.usernameAvailable ? "available" : "taken",
+      );
+    } catch {
+      setUsernameAvailability("idle");
+    }
+  }
+
+  async function checkEmailAvailability() {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!emailPattern.test(normalizedEmail)) {
+      setEmailAvailability("idle");
+
+      return;
+    }
+
+    setEmailAvailability("checking");
+    try {
+      const result = await authApi.availability({ email: normalizedEmail });
+      setEmailAvailability(result.emailAvailable ? "available" : "taken");
+    } catch {
+      setEmailAvailability("idle");
+    }
+  }
 
   async function submitCredentials(event: FormEvent) {
     event.preventDefault();
-    if (mode === "register" && password !== passwordConfirmation) {
-      setError("Passwords do not match");
+    const normalizedUsername = username.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (mode === "register" && !usernamePattern.test(normalizedUsername)) {
+      setError(
+        "Username must be 3–24 characters using letters, numbers, or underscores.",
+      );
+
       return;
     }
+    if (!emailPattern.test(normalizedEmail)) {
+      setError("Enter a valid email address.");
+
+      return;
+    }
+    if (password.length < 10) {
+      setError("Password must be at least 10 characters.");
+
+      return;
+    }
+    if (password.length > 128) {
+      setError("Password must be no more than 128 characters.");
+
+      return;
+    }
+    if (mode === "register" && password !== passwordConfirmation) {
+      setError("Passwords do not match.");
+
+      return;
+    }
+
     setSubmitting(true);
     setError("");
+
     try {
+      if (mode === "register") {
+        setUsernameAvailability("checking");
+        setEmailAvailability("checking");
+        const availability = await authApi.availability({
+          username: normalizedUsername,
+          email: normalizedEmail,
+        });
+        setUsernameAvailability(
+          availability.usernameAvailable ? "available" : "taken",
+        );
+        setEmailAvailability(
+          availability.emailAvailable ? "available" : "taken",
+        );
+
+        if (!availability.usernameAvailable || !availability.emailAvailable) {
+          setError(
+            !availability.usernameAvailable && !availability.emailAvailable
+              ? "That username and email are already in use."
+              : !availability.usernameAvailable
+                ? "That username is already taken."
+                : "An account with that email already exists.",
+          );
+
+          return;
+        }
+      }
+
       const response =
         mode === "register"
-          ? await authApi.register(username, email, password)
-          : await authApi.login(email, password);
-      onAuthenticated(response.user);
+          ? await authApi.register(normalizedUsername, normalizedEmail, password)
+          : await authApi.login(normalizedEmail, password);
+      onAuthenticated(response.user, mode);
     } catch (caught) {
       setError(
         caught instanceof Error
@@ -138,9 +267,10 @@ function SignInScreen({
   const googleSignIn = useCallback(
     async (credential: string) => {
       setError("");
+
       try {
         const response = await authApi.google(credential);
-        onAuthenticated(response.user);
+        onAuthenticated(response.user, "google");
       } catch (caught) {
         setError(
           caught instanceof Error
@@ -228,6 +358,7 @@ function SignInScreen({
               ref={formRef}
               onSubmit={submitCredentials}
               className={`account-form ${mode}`}
+              noValidate
             >
               {mode === "register" && (
                 <label className="field">
@@ -239,10 +370,18 @@ function SignInScreen({
                     pattern="[A-Za-z0-9_]+"
                     autoComplete="username"
                     value={username}
-                    onChange={(event) => setUsername(event.target.value)}
+                    onChange={(event) => {
+                      setUsername(event.target.value);
+                      setUsernameAvailability("idle");
+                    }}
+                    onBlur={checkUsernameAvailability}
                     placeholder="Enter a username"
                   />
-                  <small>3–24 letters, numbers, or underscores</small>
+                  <AvailabilityMessage
+                    state={usernameAvailability}
+                    field="username"
+                    idleMessage="3–24 letters, numbers, or underscores"
+                  />
                 </label>
               )}
               <label className="field">
@@ -252,9 +391,21 @@ function SignInScreen({
                   type="email"
                   autoComplete="email"
                   value={email}
-                  onChange={(event) => setEmail(event.target.value)}
+                  onChange={(event) => {
+                    setEmail(event.target.value);
+                    setEmailAvailability("idle");
+                  }}
+                  onBlur={
+                    mode === "register" ? checkEmailAvailability : undefined
+                  }
                   placeholder="Enter your email address"
                 />
+                {mode === "register" && (
+                  <AvailabilityMessage
+                    state={emailAvailability}
+                    field="email"
+                  />
+                )}
               </label>
               <label className="field">
                 <span>Password</span>
@@ -338,9 +489,16 @@ function SignInScreen({
                 </label>
               )}
               {error && (
-                <p className="form-error" role="alert">
-                  {error}
-                </p>
+                <Banner
+                  tone="error"
+                  title={
+                    mode === "register"
+                      ? "Couldn’t create account"
+                      : "Couldn’t sign in"
+                  }
+                  message={error}
+                  onDismiss={() => setError("")}
+                />
               )}
               <button className="add-button auth-submit" disabled={submitting}>
                 {submitting
@@ -359,6 +517,30 @@ function SignInScreen({
   );
 }
 
+function AvailabilityMessage({
+  state,
+  field,
+  idleMessage,
+}: {
+  state: AvailabilityState;
+  field: "username" | "email";
+  idleMessage?: string;
+}) {
+  if (state === "idle" && !idleMessage) return null;
+
+  const label = field === "username" ? "Username" : "Email";
+  const message =
+    state === "checking"
+      ? `Checking ${field}…`
+      : state === "available"
+        ? `${label} is available`
+        : state === "taken"
+          ? `${label} is already in use`
+          : idleMessage;
+
+  return <small className={`availability-status ${state}`}>{message}</small>;
+}
+
 function GoogleButton({
   onCredential,
 }: {
@@ -371,6 +553,7 @@ function GoogleButton({
     if (!clientId || !buttonRef.current) return;
     const render = () => {
       if (!window.google || !buttonRef.current) return;
+
       buttonRef.current.replaceChildren();
       window.google.accounts.id.initialize({
         client_id: clientId,
@@ -391,6 +574,7 @@ function GoogleButton({
     if (existing) {
       existing.addEventListener("load", render);
       render();
+
       return () => existing.removeEventListener("load", render);
     }
 
@@ -400,6 +584,7 @@ function GoogleButton({
     script.async = true;
     script.addEventListener("load", render);
     document.head.appendChild(script);
+
     return () => script.removeEventListener("load", render);
   }, [clientId, onCredential]);
 
@@ -427,9 +612,13 @@ function GoogleButton({
 
 function Library({
   user,
+  notice,
+  onDismissNotice,
   onSignedOut,
 }: {
   user: User;
+  notice: Notice | null;
+  onDismissNotice: () => void;
   onSignedOut: () => void;
 }) {
   const [items, setItems] = useState<ApiMediaItem[]>([]);
@@ -456,6 +645,7 @@ function Library({
 
   const filteredItems = useMemo(() => {
     const query = search.trim().toLowerCase();
+
     return items
       .filter((item) => typeFilter === "all" || item.type === typeFilter)
       .filter((item) => statusFilter === "all" || item.status === statusFilter)
@@ -555,6 +745,14 @@ function Library({
       </header>
 
       <main id="top">
+        {notice && !error && (
+          <Banner
+            tone={notice.tone}
+            title={notice.title}
+            message={notice.message}
+            onDismiss={onDismissNotice}
+          />
+        )}
         <section className="hero">
           <div className="hero-copy">
             <p className="eyebrow">
@@ -603,12 +801,12 @@ function Library({
             </label>
           </div>
           {error && (
-            <div className="api-message" role="alert">
-              {error}
-              <button onClick={() => setError("")} aria-label="Dismiss">
-                <X size={17} aria-hidden="true" />
-              </button>
-            </div>
+            <Banner
+              tone="error"
+              title="Something went wrong"
+              message={error}
+              onDismiss={() => setError("")}
+            />
           )}
           <div className="filter-row">
             <div className="status-tabs" aria-label="Filter by status">
@@ -741,6 +939,7 @@ function AddMediaDialog({
     event.preventDefault();
     if (!title.trim()) return;
     setSaving(true);
+
     try {
       await onAdd({
         title: title.trim(),

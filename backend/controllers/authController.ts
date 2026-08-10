@@ -46,6 +46,37 @@ function validPassword(password: unknown): password is string {
   );
 }
 
+export async function checkAvailability(req: Request, res: Response) {
+  const username =
+    typeof req.query.username === "string" ? req.query.username.trim() : "";
+  const email =
+    typeof req.query.email === "string"
+      ? req.query.email.trim().toLowerCase()
+      : "";
+
+  if (!username && !email) {
+    res.status(400).json({ message: "Provide a username or email to check" });
+
+    return;
+  }
+
+  const [usernameUsed, emailUsed] = await Promise.all([
+    username && usernamePattern.test(username)
+      ? User.exists({ usernameKey: username.toLowerCase() })
+      : Promise.resolve(null),
+    email && emailPattern.test(email)
+      ? User.exists({ email })
+      : Promise.resolve(null),
+  ]);
+
+  res.json({
+    usernameAvailable: username
+      ? usernamePattern.test(username) && !usernameUsed
+      : null,
+    emailAvailable: email ? emailPattern.test(email) && !emailUsed : null,
+  });
+}
+
 export async function register(req: Request, res: Response) {
   const username =
     typeof req.body?.username === "string" ? req.body.username.trim() : "";
@@ -78,6 +109,7 @@ export async function register(req: Request, res: Response) {
     const existing = await User.findOne({
       $or: [{ email }, { usernameKey }],
     }).select("email usernameKey");
+
     if (existing) {
       res.status(409).json({
         message:
@@ -85,6 +117,7 @@ export async function register(req: Request, res: Response) {
             ? "An account with that email already exists"
             : "That username is already taken",
       });
+
       return;
     }
 
@@ -96,6 +129,7 @@ export async function register(req: Request, res: Response) {
       passwordHash: await hashPassword(password),
     });
     setSession(res, user.id);
+
     res.status(201).json({ user: publicUser(user) });
   } catch (error: unknown) {
     if (
@@ -109,6 +143,7 @@ export async function register(req: Request, res: Response) {
         .json({ message: "That email or username is already in use" });
       return;
     }
+
     res.status(500).json({ message: "Account could not be created" });
   }
 }
@@ -122,6 +157,7 @@ export async function passwordLogin(req: Request, res: Response) {
 
   if (!emailPattern.test(email) || typeof password !== "string") {
     res.status(401).json({ message: "Email or password is incorrect" });
+
     return;
   }
 
@@ -131,10 +167,12 @@ export async function passwordLogin(req: Request, res: Response) {
 
   if (!user || !passwordMatches || user.authProvider !== "password") {
     res.status(401).json({ message: "Email or password is incorrect" });
+
     return;
   }
 
   setSession(res, user.id);
+
   res.json({ user: publicUser(user) });
 }
 
@@ -148,6 +186,7 @@ async function availableGoogleUsername(name: string, email: string) {
       return candidate;
     candidate = `${base.slice(0, 18)}${Math.floor(1000 + Math.random() * 9000)}`;
   }
+
   return `reader_${Date.now().toString(36)}`;
 }
 
@@ -158,10 +197,12 @@ export async function googleLogin(req: Request, res: Response) {
     res
       .status(503)
       .json({ message: "Google authentication is not configured" });
+
     return;
   }
   if (typeof credential !== "string" || !credential) {
     res.status(400).json({ message: "A Google credential is required" });
+
     return;
   }
 
@@ -173,6 +214,7 @@ export async function googleLogin(req: Request, res: Response) {
     const payload = ticket.getPayload();
     if (!payload?.sub || !payload.email) {
       res.status(401).json({ message: "Google account profile is incomplete" });
+
       return;
     }
 
@@ -183,12 +225,15 @@ export async function googleLogin(req: Request, res: Response) {
           message:
             "An account with this email already exists. Sign in with your password.",
         });
+
         return;
       }
+
       const username = await availableGoogleUsername(
         payload.name || "",
         payload.email,
       );
+
       user = await User.create({
         authProvider: "google",
         googleSub: payload.sub,
@@ -203,6 +248,7 @@ export async function googleLogin(req: Request, res: Response) {
     }
 
     setSession(res, user.id);
+
     res.json({ user: publicUser(user) });
   } catch {
     res

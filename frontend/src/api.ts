@@ -64,6 +64,15 @@ export const authApi = {
       method: "POST",
       body: JSON.stringify({ email, password }),
     }),
+  availability: (values: { username?: string; email?: string }) => {
+    const query = new URLSearchParams();
+    if (values.username) query.set("username", values.username);
+    if (values.email) query.set("email", values.email);
+    return request<{
+      usernameAvailable: boolean | null;
+      emailAvailable: boolean | null;
+    }>(`/api/auth/availability?${query.toString()}`);
+  },
   logout: () => request<void>("/api/auth/logout", { method: "POST" }),
 };
 
