@@ -82,11 +82,11 @@ function App() {
           setSessionError("");
           setNotice({
             tone: "success",
-            title: action === "register" ? "Account created" : "Welcome back",
+            title: action === "register" ? "Profile online" : "Session restored",
             message:
               action === "register"
-                ? `Your library is ready, ${authenticatedUser.username}.`
-                : `You’re signed in as ${authenticatedUser.username}.`,
+                ? `Your backlog is ready, ${authenticatedUser.username}.`
+                : `Welcome back, ${authenticatedUser.username}. Your queue is synced.`,
           });
           setUser(authenticatedUser);
         }}
@@ -111,7 +111,7 @@ function LoadingScreen() {
   return (
     <div className="loading-screen">
       <span className="brand-mark">M</span>
-      <p>Opening your library…</p>
+      <p>Loading your profile…</p>
     </div>
   );
 }
@@ -296,32 +296,32 @@ function SignInScreen({
           <span>Media Backlog</span>
         </a>
         <div>
-          <p className="eyebrow">Your personal watch, read &amp; play list</p>
+          <p className="eyebrow">One queue for every world</p>
           <h1>
-            Every story
+            Your next obsession
             <br />
-            has its moment.
+            is queued.
           </h1>
           <p>
-            Keep the recommendations that matter, make space for what’s next,
-            and carry your library between devices.
+            Track the games, films, series, and books you want to experience—then
+            pick up exactly where you left off.
           </p>
         </div>
         <p className="auth-footnote">
-          A quiet home for films, series, books, and games.
+          Built for completionists, casual players, and everyone in between.
         </p>
       </section>
 
       <section className="auth-panel" aria-labelledby="sign-in-title">
         <div className="auth-card">
-          <p className="section-kicker">Welcome in</p>
+          <p className="section-kicker">Player access</p>
           <h2 id="sign-in-title">
-            {mode === "register" ? "Start your library" : "Welcome back"}
+            {mode === "register" ? "Create your profile" : "Welcome back"}
           </h2>
           <p className="auth-intro">
             {mode === "register"
-              ? "Create an account to keep your collection saved and private."
-              : "Sign in to return to your saved collection."}
+              ? "Save your backlog, sync your progress, and keep every title in reach."
+              : "Sign in to load your backlog and continue where you left off."}
           </p>
 
           <GoogleButton onCredential={googleSignIn} />
@@ -637,7 +637,7 @@ function Library({
         setError(
           caught instanceof Error
             ? caught.message
-            : "Could not load your library",
+            : "Could not load your backlog",
         ),
       )
       .finally(() => setLoading(false));
@@ -739,7 +739,7 @@ function Library({
             className="add-button compact"
             onClick={() => setIsAdding(true)}
           >
-            <Plus size={17} strokeWidth={2} aria-hidden="true" /> Add media
+            <Plus size={17} strokeWidth={2} aria-hidden="true" /> Queue title
           </button>
         </div>
       </header>
@@ -753,46 +753,15 @@ function Library({
             onDismiss={onDismissNotice}
           />
         )}
-        <section className="hero">
-          <div className="hero-copy">
-            <p className="eyebrow">
-              {user.username}’s watch, read &amp; play list
-            </p>
-            <h1>
-              Keep the next great
-              <br />
-              story close.
-            </h1>
-            <p className="hero-description">
-              Your collection now lives with your account, ready whenever
-              inspiration strikes.
-            </p>
-          </div>
-          <div className="hero-stats" aria-label="Backlog summary">
-            <div>
-              <strong>{counts.backlog}</strong>
-              <span>Waiting for you</span>
-            </div>
-            <div>
-              <strong>{counts["in progress"]}</strong>
-              <span>In progress</span>
-            </div>
-            <div>
-              <strong>{counts.completed}</strong>
-              <span>Finished</span>
-            </div>
-          </div>
-        </section>
-
         <section className="library" aria-labelledby="library-title">
           <div className="section-heading">
             <div>
-              <p className="section-kicker">Saved to your account</p>
-              <h2 id="library-title">My library</h2>
+              <p className="section-kicker">Synced to your profile</p>
+              <h2 id="library-title">Backlog</h2>
             </div>
             <label className="search-field">
               <Search size={19} strokeWidth={1.8} aria-hidden="true" />
-              <span className="sr-only">Search your library</span>
+              <span className="sr-only">Search your backlog</span>
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
@@ -841,7 +810,7 @@ function Library({
           </div>
 
           {loading ? (
-            <div className="library-loading">Loading your collection…</div>
+            <div className="library-loading">Loading your backlog…</div>
           ) : filteredItems.length ? (
             <div className="media-grid">
               {filteredItems.map((item, index) => (
@@ -863,7 +832,7 @@ function Library({
                       {item.year && <span>{item.year}</span>}
                     </div>
                     <h3>{item.title}</h3>
-                    <p>{item.notes || "No notes yet."}</p>
+                    <p>{item.notes || "No notes logged yet."}</p>
                     <div className="card-actions">
                       <label>
                         <span className="sr-only">Status for {item.title}</span>
@@ -896,15 +865,15 @@ function Library({
             <div className="empty-state">
               <span aria-hidden="true">◎</span>
               <h3>
-                {items.length ? "No stories found" : "Your shelf is ready"}
+                {items.length ? "No matches in this queue" : "Your queue is empty"}
               </h3>
               <p>
                 {items.length
-                  ? "Try a different filter, or add something new to your list."
-                  : "Add the first film, series, book, or game you don’t want to forget."}
+                  ? "Try another filter, or queue something new."
+                  : "Add the first game, film, series, or book on your radar."}
               </p>
               <button className="text-button" onClick={() => setIsAdding(true)}>
-                Add a title
+                Queue a title
               </button>
             </div>
           )}
@@ -912,7 +881,7 @@ function Library({
       </main>
       <footer>
         <span>Media Backlog</span>
-        <p>Signed in as {user.email}</p>
+        <p>Queue synced for {user.email}</p>
       </footer>
       {isAdding && (
         <AddMediaDialog onAdd={addItem} onClose={() => setIsAdding(false)} />
@@ -969,10 +938,10 @@ function AddMediaDialog({
         >
           <X size={21} aria-hidden="true" />
         </button>
-        <p className="section-kicker">Grow your collection</p>
-        <h2 id="dialog-title">Add something new</h2>
+        <p className="section-kicker">Add to queue</p>
+        <h2 id="dialog-title">Queue a new title</h2>
         <p className="dialog-intro">
-          Save it now. Decide when to start it later.
+          Capture it now. Choose your next session later.
         </p>
         <form onSubmit={submit}>
           <label className="field">
@@ -982,7 +951,7 @@ function AddMediaDialog({
               required
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              placeholder="e.g. The Left Hand of Darkness"
+              placeholder="e.g. Cyberpunk 2077"
             />
           </label>
           <div className="field-pair">
@@ -1031,7 +1000,7 @@ function AddMediaDialog({
             <textarea
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
-              placeholder="Why did this catch your eye?"
+              placeholder="What put this on your radar?"
               rows={3}
             />
           </label>
@@ -1040,7 +1009,7 @@ function AddMediaDialog({
               Cancel
             </button>
             <button type="submit" className="add-button" disabled={saving}>
-              {saving ? "Saving…" : "Add to library"}
+              {saving ? "Saving…" : "Add to queue"}
             </button>
           </div>
         </form>

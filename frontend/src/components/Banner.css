@@ -11,20 +11,20 @@
   gap: 10px;
   border: 1px solid;
   border-radius: 10px;
-  box-shadow: 0 16px 42px rgba(40, 38, 33, 0.2);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
   animation: banner-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .banner-success {
-  border-color: #a8c7b7;
-  background: #e8f1ec;
-  color: #315d48;
+  border-color: rgba(84, 230, 255, 0.46);
+  background: #0d1920;
+  color: #9af2ff;
 }
 
 .banner-error {
-  border-color: #d9ada1;
-  background: #f5e7e2;
-  color: #923d2c;
+  border-color: rgba(255, 107, 145, 0.48);
+  background: #211219;
+  color: #ff91ae;
 }
 
 .banner-icon {

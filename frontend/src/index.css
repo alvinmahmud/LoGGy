@@ -1,9 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
 
 :root {
-  font-family: "DM Sans", sans-serif;
-  color: #282621;
-  background: #f4f1e9;
+  font-family: "Space Grotesk", sans-serif;
+  color: #e7edf8;
+  background: #080a10;
+  color-scheme: dark;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -37,6 +38,6 @@ a {
   text-decoration: none;
 }
 ::selection {
-  background: #df683f;
-  color: #fff;
+  background: #54e6ff;
+  color: #080a10;
 }

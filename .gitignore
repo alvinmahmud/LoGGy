@@ -3,11 +3,17 @@
 
 # Environment variables
 *.env
-*.env.* 
+*.env.*
 !**/.env.example
 
-# Build outputs
+# Build outputs and tool caches
 **/dist/
+**/coverage/
+**/.nyc_output/
+**/.cache/
+**/.vite/
+*.tsbuildinfo
+.eslintcache
 
 # Logs
 *.log
@@ -21,3 +27,5 @@ pnpm-debug.log*
 
 # System files
 .DS_Store
+Thumbs.db
+Desktop.ini
