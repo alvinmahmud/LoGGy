@@ -8,7 +8,16 @@ import {
   useRef,
   useState,
 } from "react";
-import { Eye, EyeOff, Plus, Search, X } from "lucide-react";
+import {
+  ChevronDown,
+  Eye,
+  EyeOff,
+  LogOut,
+  Plus,
+  Search,
+  Settings,
+  X,
+} from "lucide-react";
 import {
   ApiError,
   authApi,
@@ -82,7 +91,8 @@ function App() {
           setSessionError("");
           setNotice({
             tone: "success",
-            title: action === "register" ? "Profile online" : "Session restored",
+            title:
+              action === "register" ? "Profile online" : "Session restored",
             message:
               action === "register"
                 ? `Your backlog is ready, ${authenticatedUser.username}.`
@@ -157,9 +167,7 @@ function SignInScreen({
       const result = await authApi.availability({
         username: normalizedUsername,
       });
-      setUsernameAvailability(
-        result.usernameAvailable ? "available" : "taken",
-      );
+      setUsernameAvailability(result.usernameAvailable ? "available" : "taken");
     } catch {
       setUsernameAvailability("idle");
     }
@@ -248,7 +256,11 @@ function SignInScreen({
 
       const response =
         mode === "register"
-          ? await authApi.register(normalizedUsername, normalizedEmail, password)
+          ? await authApi.register(
+              normalizedUsername,
+              normalizedEmail,
+              password,
+            )
           : await authApi.login(normalizedEmail, password);
       onAuthenticated(response.user, mode);
     } catch (caught) {
@@ -303,8 +315,8 @@ function SignInScreen({
             is queued.
           </h1>
           <p>
-            Track the games, films, series, and books you want to experience—then
-            pick up exactly where you left off.
+            Track the games, films, series, and books you want to
+            experience—then pick up exactly where you left off.
           </p>
         </div>
         <p className="auth-footnote">
@@ -628,11 +640,16 @@ function Library({
   const [typeFilter, setTypeFilter] = useState<MediaType | "all">("all");
   const [statusFilter, setStatusFilter] = useState<Status | "all">("all");
   const [isAdding, setIsAdding] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     mediaApi
       .list()
-      .then(setItems)
+      .then((loadedItems) => {
+        setItems(loadedItems);
+        setError("");
+      })
       .catch((caught) =>
         setError(
           caught instanceof Error
@@ -642,6 +659,28 @@ function Library({
       )
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (!accountMenuOpen) return;
+
+    function closeOnOutsideClick(event: MouseEvent) {
+      if (!accountMenuRef.current?.contains(event.target as Node)) {
+        setAccountMenuOpen(false);
+      }
+    }
+
+    function closeOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setAccountMenuOpen(false);
+    }
+
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    document.addEventListener("keydown", closeOnEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", closeOnOutsideClick);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [accountMenuOpen]);
 
   const filteredItems = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -707,6 +746,7 @@ function Library({
   }
 
   async function signOut() {
+    setAccountMenuOpen(false);
     try {
       await authApi.logout();
     } finally {
@@ -724,16 +764,36 @@ function Library({
           <span>Media Backlog</span>
         </a>
         <div className="topbar-actions">
-          <div className="account-chip">
-            {user.picture ? (
-              <img src={user.picture} alt="" />
-            ) : (
-              <span className="account-initial">
-                {user.username.charAt(0).toUpperCase()}
-              </span>
+          <div className="account-menu" ref={accountMenuRef}>
+            <button
+              type="button"
+              className="account-trigger"
+              onClick={() => setAccountMenuOpen((open) => !open)}
+              aria-haspopup="menu"
+              aria-expanded={accountMenuOpen}
+            >
+              {user.picture ? (
+                <img src={user.picture} alt="" />
+              ) : (
+                <span className="account-initial" aria-hidden="true">
+                  {user.username.charAt(0).toUpperCase()}
+                </span>
+              )}
+              <span className="account-name">{user.username}</span>
+              <ChevronDown size={15} strokeWidth={1.8} aria-hidden="true" />
+            </button>
+            {accountMenuOpen && (
+              <div className="account-dropdown" role="menu">
+                <button type="button" role="menuitem" disabled>
+                  <Settings size={16} strokeWidth={1.8} aria-hidden="true" />
+                  Account settings
+                </button>
+                <button type="button" role="menuitem" onClick={signOut}>
+                  <LogOut size={16} strokeWidth={1.8} aria-hidden="true" />
+                  Sign out
+                </button>
+              </div>
             )}
-            <span className="account-name">{user.username}</span>
-            <button onClick={signOut}>Sign out</button>
           </div>
           <button
             className="add-button compact"
@@ -745,7 +805,7 @@ function Library({
       </header>
 
       <main id="top">
-        {notice && !error && (
+        {notice && !loading && !error && (
           <Banner
             tone={notice.tone}
             title={notice.title}
@@ -865,7 +925,9 @@ function Library({
             <div className="empty-state">
               <span aria-hidden="true">◎</span>
               <h3>
-                {items.length ? "No matches in this queue" : "Your queue is empty"}
+                {items.length
+                  ? "No matches in this queue"
+                  : "Your queue is empty"}
               </h3>
               <p>
                 {items.length

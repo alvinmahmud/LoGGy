@@ -27,7 +27,7 @@ function createRateLimit(maxAttempts: number) {
 
     if (window.count > maxAttempts) {
       res.status(429).json({ message: "Too many requests. Try again later." });
-      
+
       return;
     }
 
