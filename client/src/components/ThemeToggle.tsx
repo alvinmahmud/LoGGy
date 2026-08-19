@@ -26,7 +26,9 @@ export function ThemeToggle({
       aria-label={`Switch to ${nextTheme} mode`}
     >
       <Icon size={16} strokeWidth={1.8} aria-hidden="true" />
-      {menuItem && <span>{nextTheme === "light" ? "Light mode" : "Dark mode"}</span>}
+      {menuItem && (
+        <span>{nextTheme === "light" ? "Light mode" : "Dark mode"}</span>
+      )}
     </button>
   );
 }

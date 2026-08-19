@@ -6,7 +6,9 @@ type LogoProps = {
 export function Logo({ href, className = "" }: LogoProps) {
   const content = (
     <>
-      <span className="brand-mark" aria-hidden="true">GG</span>
+      <span className="brand-mark" aria-hidden="true">
+        GG
+      </span>
       <span className="brand-wordmark">
         Lo<span className="brand-gg">GG</span>y
       </span>

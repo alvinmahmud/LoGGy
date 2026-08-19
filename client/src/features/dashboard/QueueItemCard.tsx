@@ -2,10 +2,7 @@ import type { CSSProperties } from "react";
 import { X } from "lucide-react";
 import type { QueueItem } from "../../services/api";
 import type { QueueItemStatus } from "../../types/queue";
-import {
-  queueItemTypeLabels,
-  queueItemTypeMarks,
-} from "./queueItemConstants";
+import { queueItemTypeLabels, queueItemTypeMarks } from "./queueItemConstants";
 
 type QueueItemCardProps = {
   item: QueueItem;

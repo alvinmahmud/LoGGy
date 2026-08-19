@@ -39,16 +39,13 @@ app.use("/api/auth", authRoutes);
 app.use("/api/catalog", catalogRoutes);
 app.use("/api/queue", queueRoutes);
 
-const uri =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/loggy";
+const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/loggy";
 const port = Number(process.env.PORT) || 3000;
 
 async function start() {
   try {
     await mongoose.connect(uri);
-    app.listen(port, () =>
-      console.log(`LoGGy API listening on port ${port}`),
-    );
+    app.listen(port, () => console.log(`LoGGy API listening on port ${port}`));
   } catch (error) {
     console.error("Could not start LoGGy API", error);
     process.exit(1);

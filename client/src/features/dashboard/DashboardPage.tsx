@@ -95,7 +95,9 @@ export function DashboardPage({
       setIsAdding(false);
       setError("");
     } catch (caught) {
-      setError(caught instanceof Error ? caught.message : "Could not save this item");
+      setError(
+        caught instanceof Error ? caught.message : "Could not save this item",
+      );
     }
   }
 
@@ -144,7 +146,10 @@ export function DashboardPage({
             onToggleTheme={onToggleTheme}
             onSignOut={signOut}
           />
-          <button className="add-button compact" onClick={() => setIsAdding(true)}>
+          <button
+            className="add-button compact"
+            onClick={() => setIsAdding(true)}
+          >
             <Plus size={17} strokeWidth={2} aria-hidden="true" /> Queue title
           </button>
         </div>
@@ -247,7 +252,10 @@ export function DashboardPage({
       </footer>
 
       {isAdding && (
-        <AddQueueItemDialog onAdd={addItem} onClose={() => setIsAdding(false)} />
+        <AddQueueItemDialog
+          onAdd={addItem}
+          onClose={() => setIsAdding(false)}
+        />
       )}
     </div>
   );
