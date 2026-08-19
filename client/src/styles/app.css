@@ -5,7 +5,6 @@
   --cream: #151a27;
   --line: #273044;
   --orange: #54e6ff;
-  --forest: #111725;
   --cyan: #54e6ff;
   --violet: #9a86ff;
   --surface: #0f1420;
@@ -30,7 +29,6 @@ html[data-theme="light"] {
   --cream: #e8eef5;
   --line: #cbd6e4;
   --orange: #087f99;
-  --forest: #eaf1f7;
   --cyan: #087f99;
   --violet: #725fd0;
   --surface: #ffffff;
@@ -488,10 +486,6 @@ footer p {
 .dialog h2 {
   font-size: 48px;
 }
-.dialog-intro {
-  margin: 12px 0 29px;
-  color: var(--muted);
-}
 .dialog-close {
   position: absolute;
   right: 22px;
@@ -741,8 +735,7 @@ footer p {
 }
 
 .auth-brand,
-.auth-story > div,
-.auth-footnote {
+.auth-story > div {
   position: relative;
   z-index: 1;
 }
@@ -765,12 +758,6 @@ footer p {
   margin: 28px 0 0;
   color: #a8b3c8;
   line-height: 1.75;
-}
-
-.auth-footnote {
-  margin: 0;
-  color: #7f8ba1;
-  font-size: 12px;
 }
 
 .auth-panel {

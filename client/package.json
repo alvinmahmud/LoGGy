@@ -1,11 +1,12 @@
 {
-  "name": "frontend",
+  "name": "@media-backlog/client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "lint": "eslint src",
     "preview": "vite preview"
   },
   "dependencies": {

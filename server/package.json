@@ -1,16 +1,15 @@
 {
-  "name": "backend",
+  "name": "@media-backlog/server",
   "version": "1.0.0",
-  "main": "index.js",
+  "private": true,
+  "main": "dist/server.js",
   "scripts": {
-    "start": "ts-node src/server.ts",
+    "start": "node dist/server.js",
     "build": "tsc",
     "dev": "nodemon src/server.ts"
   },
-  "keywords": [],
-  "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Media Backlog API",
   "dependencies": {
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

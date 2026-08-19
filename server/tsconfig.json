@@ -3,6 +3,7 @@
     "target": "ES2020",
     "jsx": "preserve",
     "module": "commonjs",
+    "rootDir": "./src",
     "allowJs": true,
     "outDir": "./dist",
     "esModuleInterop": true,
@@ -10,5 +11,5 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "dist", "frontend"]
+  "exclude": ["node_modules", "dist"]
 }
