@@ -2,17 +2,22 @@ import { useEffect, useMemo, useState } from "react";
 import { Plus, Search } from "lucide-react";
 import {
   authApi,
-  mediaApi,
-  type ApiMediaItem,
+  queueApi,
+  type QueueItem,
   type User,
 } from "../../services/api";
 import { Banner } from "../../components/Banner";
-import type { MediaStatus, MediaType, NewMediaItem } from "../../types/media";
+import { Logo } from "../../components/Logo";
+import type {
+  NewQueueItem,
+  QueueItemStatus,
+  QueueItemType,
+} from "../../types/queue";
 import type { Notice, Theme } from "../../types/ui";
 import { AccountMenu } from "./AccountMenu";
-import { AddMediaDialog } from "./AddMediaDialog";
-import { MediaCard } from "./MediaCard";
-import { mediaStatusLabels } from "./mediaConstants";
+import { AddQueueItemDialog } from "./AddQueueItemDialog";
+import { QueueItemCard } from "./QueueItemCard";
+import { queueItemStatusLabels } from "./queueItemConstants";
 
 type DashboardPageProps = {
   user: User;
@@ -31,16 +36,18 @@ export function DashboardPage({
   onDismissNotice,
   onSignedOut,
 }: DashboardPageProps) {
-  const [items, setItems] = useState<ApiMediaItem[]>([]);
+  const [items, setItems] = useState<QueueItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState<MediaType | "all">("all");
-  const [statusFilter, setStatusFilter] = useState<MediaStatus | "all">("all");
+  const [typeFilter, setTypeFilter] = useState<QueueItemType | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<QueueItemStatus | "all">(
+    "all",
+  );
   const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
-    mediaApi
+    queueApi
       .list()
       .then((loadedItems) => {
         setItems(loadedItems);
@@ -80,9 +87,9 @@ export function DashboardPage({
     [items],
   );
 
-  async function addItem(item: NewMediaItem) {
+  async function addItem(item: NewQueueItem) {
     try {
-      const created = await mediaApi.create(item);
+      const created = await queueApi.create(item);
       setItems((current) => [created, ...current]);
       setIsAdding(false);
       setError("");
@@ -91,9 +98,9 @@ export function DashboardPage({
     }
   }
 
-  async function updateStatus(id: string, status: MediaStatus) {
+  async function updateStatus(id: string, status: QueueItemStatus) {
     try {
-      const updated = await mediaApi.update(id, { status });
+      const updated = await queueApi.update(id, { status });
       setItems((current) =>
         current.map((item) => (item._id === id ? updated : item)),
       );
@@ -107,7 +114,7 @@ export function DashboardPage({
 
   async function removeItem(id: string) {
     try {
-      await mediaApi.remove(id);
+      await queueApi.remove(id);
       setItems((current) => current.filter((item) => item._id !== id));
       setError("");
     } catch (caught) {
@@ -128,10 +135,7 @@ export function DashboardPage({
   return (
     <div className="app-shell">
       <header className="topbar">
-        <a className="brand" href="#top" aria-label="Media Backlog home">
-          <span className="brand-mark" aria-hidden="true">M</span>
-          <span>Media Backlog</span>
-        </a>
+        <Logo href="#top" />
         <div className="topbar-actions">
           <AccountMenu
             user={user}
@@ -186,7 +190,7 @@ export function DashboardPage({
                     onClick={() => setStatusFilter(status)}
                     key={status}
                   >
-                    {status === "all" ? "All" : mediaStatusLabels[status]}
+                    {status === "all" ? "All" : queueItemStatusLabels[status]}
                     <span>{counts[status]}</span>
                   </button>
                 ),
@@ -197,7 +201,7 @@ export function DashboardPage({
               <select
                 value={typeFilter}
                 onChange={(event) =>
-                  setTypeFilter(event.target.value as MediaType | "all")
+                  setTypeFilter(event.target.value as QueueItemType | "all")
                 }
               >
                 <option value="all">All media</option>
@@ -211,9 +215,9 @@ export function DashboardPage({
           {loading ? (
             <div className="library-loading">Loading your backlog…</div>
           ) : filteredItems.length ? (
-            <div className="media-grid">
+            <div className="queue-grid">
               {filteredItems.map((item, index) => (
-                <MediaCard
+                <QueueItemCard
                   key={item._id}
                   item={item}
                   index={index}
@@ -235,12 +239,14 @@ export function DashboardPage({
       </main>
 
       <footer>
-        <span>Media Backlog</span>
+        <span className="brand-wordmark">
+          Lo<span className="brand-gg">GG</span>y
+        </span>
         <p>Signed in as {user.email}</p>
       </footer>
 
       {isAdding && (
-        <AddMediaDialog onAdd={addItem} onClose={() => setIsAdding(false)} />
+        <AddQueueItemDialog onAdd={addItem} onClose={() => setIsAdding(false)} />
       )}
     </div>
   );

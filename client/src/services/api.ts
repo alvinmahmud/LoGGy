@@ -5,7 +5,7 @@ export type User = {
   picture?: string;
 };
 
-export type ApiMediaItem = {
+export type QueueItem = {
   _id: string;
   title: string;
   type: "game" | "movie" | "tv";
@@ -84,18 +84,18 @@ export const authApi = {
   logout: () => request<void>("/api/auth/logout", { method: "POST" }),
 };
 
-export const mediaApi = {
-  list: () => request<ApiMediaItem[]>("/api/media"),
-  create: (item: Omit<ApiMediaItem, "_id" | "createdAt">) =>
-    request<ApiMediaItem>("/api/media", {
+export const queueApi = {
+  list: () => request<QueueItem[]>("/api/queue"),
+  create: (item: Omit<QueueItem, "_id" | "createdAt">) =>
+    request<QueueItem>("/api/queue", {
       method: "POST",
       body: JSON.stringify(item),
     }),
-  update: (id: string, changes: Partial<ApiMediaItem>) =>
-    request<ApiMediaItem>(`/api/media/${id}`, {
+  update: (id: string, changes: Partial<QueueItem>) =>
+    request<QueueItem>(`/api/queue/${id}`, {
       method: "PUT",
       body: JSON.stringify(changes),
     }),
   remove: (id: string) =>
-    request<void>(`/api/media/${id}`, { method: "DELETE" }),
+    request<void>(`/api/queue/${id}`, { method: "DELETE" }),
 };

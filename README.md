@@ -1,8 +1,8 @@
-# Media Backlog
+# LoGGy
 
-A full stack MERN application to help you manage your backlog of movies, games, TV shows, or whatever!
+A full-stack MERN application for tracking games, movies, and TV shows.
 
 ## Stack
 
-- **Frontend:** React (TypeScript) with Vite
-- **Backend:** Node.js, Express, MongoDB (Mongoose)
+- **Client:** React (TypeScript) with Vite
+- **Server:** Node.js, Express, MongoDB (Mongoose)

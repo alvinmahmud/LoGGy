@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
-export const SESSION_COOKIE = "media_backlog_session";
+export const SESSION_COOKIE = "loggy_session";
 
 export interface AuthenticatedRequest extends Request {
   auth: { userId: string };
@@ -10,7 +10,7 @@ export interface AuthenticatedRequest extends Request {
 function getJwtSecret() {
   const secret = process.env.JWT_SECRET;
   if (!secret && process.env.NODE_ENV !== "production") {
-    return "media-backlog-local-development-secret-change-before-production";
+    return "loggy-local-development-secret-change-before-production";
   }
   if (!secret) throw new Error("JWT_SECRET is not configured");
   return secret;
@@ -20,8 +20,8 @@ export function createSessionToken(userId: string) {
   return jwt.sign({}, getJwtSecret(), {
     subject: userId,
     expiresIn: "7d",
-    issuer: "media-backlog",
-    audience: "media-backlog-web",
+    issuer: "loggy",
+    audience: "loggy-web",
   });
 }
 
@@ -45,8 +45,8 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 
   try {
     const payload = jwt.verify(token, getJwtSecret(), {
-      issuer: "media-backlog",
-      audience: "media-backlog-web",
+      issuer: "loggy",
+      audience: "loggy-web",
     }) as JwtPayload;
 
     if (!payload.sub) throw new Error("Session subject is missing");

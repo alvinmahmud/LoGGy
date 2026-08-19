@@ -1,16 +1,20 @@
 import { type FormEvent, useState } from "react";
 import { X } from "lucide-react";
-import type { MediaStatus, MediaType, NewMediaItem } from "../../types/media";
+import type {
+  NewQueueItem,
+  QueueItemStatus,
+  QueueItemType,
+} from "../../types/queue";
 
-type AddMediaDialogProps = {
-  onAdd: (item: NewMediaItem) => Promise<void>;
+type AddQueueItemDialogProps = {
+  onAdd: (item: NewQueueItem) => Promise<void>;
   onClose: () => void;
 };
 
-export function AddMediaDialog({ onAdd, onClose }: AddMediaDialogProps) {
+export function AddQueueItemDialog({ onAdd, onClose }: AddQueueItemDialogProps) {
   const [title, setTitle] = useState("");
-  const [type, setType] = useState<MediaType>("game");
-  const [status, setStatus] = useState<MediaStatus>("backlog");
+  const [type, setType] = useState<QueueItemType>("game");
+  const [status, setStatus] = useState<QueueItemStatus>("backlog");
   const [year, setYear] = useState("");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
@@ -67,7 +71,9 @@ export function AddMediaDialog({ onAdd, onClose }: AddMediaDialogProps) {
               <span>Media type</span>
               <select
                 value={type}
-                onChange={(event) => setType(event.target.value as MediaType)}
+                onChange={(event) =>
+                  setType(event.target.value as QueueItemType)
+                }
               >
                 <option value="game">Game</option>
                 <option value="movie">Movie</option>
@@ -79,7 +85,7 @@ export function AddMediaDialog({ onAdd, onClose }: AddMediaDialogProps) {
               <select
                 value={status}
                 onChange={(event) =>
-                  setStatus(event.target.value as MediaStatus)
+                  setStatus(event.target.value as QueueItemStatus)
                 }
               >
                 <option value="backlog">Backlog</option>

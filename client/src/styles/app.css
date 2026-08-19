@@ -87,6 +87,14 @@ html[data-theme="light"] {
   font-weight: 700;
   letter-spacing: -0.02em;
 }
+.brand-wordmark {
+  white-space: nowrap;
+}
+.brand-gg {
+  color: var(--cyan);
+  letter-spacing: 0.035em;
+  text-shadow: 0 0 14px rgba(84, 230, 255, 0.28);
+}
 .brand-mark {
   width: 34px;
   height: 34px;
@@ -97,8 +105,9 @@ html[data-theme="light"] {
   background: rgba(84, 230, 255, 0.08);
   color: var(--orange);
   font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 400;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
 }
 .add-button {
   border: 1px solid rgba(84, 230, 255, 0.72);
@@ -243,12 +252,12 @@ h1 {
 .type-filter select {
   padding: 9px 34px 9px 13px;
 }
-.media-grid {
+.queue-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 22px;
 }
-.media-card {
+.queue-item-card {
   min-width: 0;
   background: linear-gradient(
     155deg,
@@ -262,7 +271,7 @@ h1 {
     transform 0.25s ease,
     box-shadow 0.25s ease;
 }
-.media-card:hover {
+.queue-item-card:hover {
   transform: translateY(-4px);
   border-color: rgba(92, 225, 255, 0.38);
   box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
@@ -309,13 +318,13 @@ h1 {
   left: -45px;
   bottom: -52px;
 }
-.media-initial {
+.item-initial {
   font-family: var(--font-display);
   color: rgba(255, 255, 255, 0.94);
   font-size: 88px;
   line-height: 1;
 }
-.media-mark {
+.item-mark {
   position: absolute;
   left: 18px;
   top: 14px;
@@ -551,7 +560,7 @@ footer p {
   border: 0;
 }
 @media (max-width: 900px) {
-  .media-grid {
+  .queue-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -589,7 +598,7 @@ footer p {
   .type-filter select {
     width: 100%;
   }
-  .media-grid {
+  .queue-grid {
     grid-template-columns: 1fr;
   }
   .card-visual {
@@ -1120,12 +1129,12 @@ html[data-theme="light"] .status-tabs button.active {
   box-shadow: 0 0 18px rgba(8, 127, 153, 0.12);
 }
 
-html[data-theme="light"] .media-card {
+html[data-theme="light"] .queue-item-card {
   background: linear-gradient(155deg, #ffffff, #f4f7fb);
   box-shadow: 0 8px 24px rgba(42, 58, 82, 0.06);
 }
 
-html[data-theme="light"] .media-card:hover {
+html[data-theme="light"] .queue-item-card:hover {
   border-color: rgba(8, 127, 153, 0.42);
   box-shadow: 0 18px 42px rgba(42, 58, 82, 0.13);
 }

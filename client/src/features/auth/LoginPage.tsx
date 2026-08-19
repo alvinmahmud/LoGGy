@@ -8,6 +8,7 @@ import {
 import { Eye, EyeOff } from "lucide-react";
 import { authApi, type User } from "../../services/api";
 import { Banner } from "../../components/Banner";
+import { Logo } from "../../components/Logo";
 import { ThemeToggle } from "../../components/ThemeToggle";
 import type { Theme } from "../../types/ui";
 import { AvailabilityMessage } from "./AvailabilityMessage";
@@ -201,16 +202,7 @@ export function LoginPage({
         className="auth-theme-toggle"
       />
       <section className="auth-story">
-        <a
-          className="brand auth-brand"
-          href="/"
-          aria-label="Media Backlog home"
-        >
-          <span className="brand-mark" aria-hidden="true">
-            M
-          </span>
-          <span>Media Backlog</span>
-        </a>
+        <Logo href="/" className="auth-brand" />
         <div>
           <p className="eyebrow">Your media list</p>
           <h1>Keep a backlog.</h1>

@@ -1,5 +1,5 @@
 {
-  "name": "@media-backlog/server",
+  "name": "@loggy/server",
   "version": "1.0.0",
   "private": true,
   "main": "dist/server.js",
@@ -9,7 +9,7 @@
     "dev": "nodemon src/server.ts"
   },
   "license": "ISC",
-  "description": "Media Backlog API",
+  "description": "LoGGy API",
   "dependencies": {
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

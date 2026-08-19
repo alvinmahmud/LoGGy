@@ -1,37 +1,40 @@
 import type { CSSProperties } from "react";
 import { X } from "lucide-react";
-import type { ApiMediaItem } from "../../services/api";
-import type { MediaStatus } from "../../types/media";
-import { mediaTypeLabels, mediaTypeMarks } from "./mediaConstants";
+import type { QueueItem } from "../../services/api";
+import type { QueueItemStatus } from "../../types/queue";
+import {
+  queueItemTypeLabels,
+  queueItemTypeMarks,
+} from "./queueItemConstants";
 
-type MediaCardProps = {
-  item: ApiMediaItem;
+type QueueItemCardProps = {
+  item: QueueItem;
   index: number;
-  onStatusChange: (id: string, status: MediaStatus) => void;
+  onStatusChange: (id: string, status: QueueItemStatus) => void;
   onRemove: (id: string) => void;
 };
 
-export function MediaCard({
+export function QueueItemCard({
   item,
   index,
   onStatusChange,
   onRemove,
-}: MediaCardProps) {
+}: QueueItemCardProps) {
   return (
     <article
-      className={`media-card tone-${item.type}`}
+      className={`queue-item-card tone-${item.type}`}
       style={{ "--delay": `${index * 45}ms` } as CSSProperties}
     >
       <div className="card-visual" aria-hidden="true">
-        <span className="media-mark">{mediaTypeMarks[item.type]}</span>
-        <span className="media-initial">
+        <span className="item-mark">{queueItemTypeMarks[item.type]}</span>
+        <span className="item-initial">
           {item.title.charAt(0).toUpperCase()}
         </span>
-        <span className="visual-type">{mediaTypeLabels[item.type]}</span>
+        <span className="visual-type">{queueItemTypeLabels[item.type]}</span>
       </div>
       <div className="card-content">
         <div className="card-meta">
-          <span>{mediaTypeLabels[item.type]}</span>
+          <span>{queueItemTypeLabels[item.type]}</span>
           {item.year && <span>{item.year}</span>}
         </div>
         <h3>{item.title}</h3>
@@ -43,7 +46,7 @@ export function MediaCard({
               className={`status-select status-${item.status.replace(" ", "-")}`}
               value={item.status}
               onChange={(event) =>
-                onStatusChange(item._id, event.target.value as MediaStatus)
+                onStatusChange(item._id, event.target.value as QueueItemStatus)
               }
             >
               <option value="backlog">Backlog</option>

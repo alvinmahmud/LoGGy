@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const mediaItemSchema = new mongoose.Schema(
+const queueItemSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
@@ -25,8 +25,9 @@ const mediaItemSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-mediaItemSchema.index({ user: 1, createdAt: -1 });
+queueItemSchema.index({ user: 1, createdAt: -1 });
 
-const MediaItem = mongoose.model("MediaItem", mediaItemSchema);
+// Keep the existing collection name so the project rename preserves user data.
+const QueueItem = mongoose.model("QueueItem", queueItemSchema, "mediaitems");
 
-export default MediaItem;
+export default QueueItem;

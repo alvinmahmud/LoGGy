@@ -4,13 +4,15 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes";
-import mediaRoutes from "./routes/mediaRoutes";
+import queueRoutes from "./routes/queueRoutes";
 
 dotenv.config();
 
 const app: Express = express();
 const allowedOrigins = (
-  process.env.FRONTEND_ORIGIN || "http://localhost:5173,http://127.0.0.1:5173"
+  process.env.CLIENT_ORIGIN ||
+  process.env.FRONTEND_ORIGIN ||
+  "http://localhost:5173,http://127.0.0.1:5173"
 )
   .split(",")
   .map((origin) => origin.trim());
@@ -33,20 +35,20 @@ app.get("/health", (_req: Request, res: Response) => {
   });
 });
 app.use("/api/auth", authRoutes);
-app.use("/api/media", mediaRoutes);
+app.use("/api/queue", queueRoutes);
 
 const uri =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/media-backlog";
+  process.env.MONGODB_URI || "mongodb://localhost:27017/loggy";
 const port = Number(process.env.PORT) || 3000;
 
 async function start() {
   try {
     await mongoose.connect(uri);
     app.listen(port, () =>
-      console.log(`Media Backlog API listening on port ${port}`),
+      console.log(`LoGGy API listening on port ${port}`),
     );
   } catch (error) {
-    console.error("Could not start Media Backlog API", error);
+    console.error("Could not start LoGGy API", error);
     process.exit(1);
   }
 }
