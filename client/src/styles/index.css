@@ -16,6 +16,18 @@ html {
   scroll-behavior: smooth;
   background: var(--document-bg, #080a10);
 }
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+  animation-timing-function: ease-out;
+}
+html.theme-transitioning body,
+html.theme-transitioning body * {
+  transition-property:
+    background-color, border-color, color, box-shadow, fill, stroke !important;
+  transition-duration: 180ms !important;
+  transition-timing-function: ease-out !important;
+}
 body {
   margin: 0;
   min-width: 320px;
