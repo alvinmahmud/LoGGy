@@ -1,5 +1,6 @@
 import { CircleAlert, CircleCheck, X } from "lucide-react";
 import { createPortal } from "react-dom";
+import { useEffect, useRef } from "react";
 import "./Banner.css";
 
 export type BannerTone = "success" | "error";
@@ -9,13 +10,28 @@ export function Banner({
   title,
   message,
   onDismiss,
+  duration = 5000,
 }: {
   tone: BannerTone;
   title: string;
   message: string;
   onDismiss?: () => void;
+  duration?: number;
 }) {
   const Icon = tone === "success" ? CircleCheck : CircleAlert;
+  const dismissRef = useRef(onDismiss);
+
+  useEffect(() => {
+    dismissRef.current = onDismiss;
+  }, [onDismiss]);
+
+  useEffect(() => {
+    if (!dismissRef.current || duration <= 0) return;
+
+    const timeout = window.setTimeout(() => dismissRef.current?.(), duration);
+
+    return () => window.clearTimeout(timeout);
+  }, [duration, message, title, tone]);
 
   return createPortal(
     <div

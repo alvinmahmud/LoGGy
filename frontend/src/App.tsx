@@ -80,12 +80,6 @@ function App() {
     setTheme((current) => (current === "dark" ? "light" : "dark"));
 
   useEffect(() => {
-    if (!notice) return;
-    const timeout = window.setTimeout(() => setNotice(null), 5500);
-    return () => window.clearTimeout(timeout);
-  }, [notice]);
-
-  useEffect(() => {
     authApi
       .session()
       .then(({ user: currentUser }) => setUser(currentUser))
