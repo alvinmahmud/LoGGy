@@ -2,8 +2,8 @@
 
 :root {
   font-family: "Space Grotesk", sans-serif;
-  color: #e7edf8;
-  background: #080a10;
+  color: var(--ink, #e7edf8);
+  background: var(--document-bg, #080a10);
   color-scheme: dark;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -14,11 +14,14 @@
 }
 html {
   scroll-behavior: smooth;
+  background: var(--document-bg, #080a10);
 }
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background: var(--document-bg, #080a10);
+  color: var(--ink, #e7edf8);
 }
 button,
 input,

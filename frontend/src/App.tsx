@@ -13,9 +13,11 @@ import {
   Eye,
   EyeOff,
   LogOut,
+  Moon,
   Plus,
   Search,
   Settings,
+  Sun,
   X,
 } from "lucide-react";
 import {
@@ -34,6 +36,7 @@ type NewMediaItem = Omit<ApiMediaItem, "_id" | "createdAt">;
 type AuthAction = "register" | "login" | "google";
 type AvailabilityState = "idle" | "checking" | "available" | "taken";
 type Notice = { tone: BannerTone; title: string; message: string };
+type Theme = "dark" | "light";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const usernamePattern = /^[A-Za-z0-9_]{3,24}$/;
@@ -61,6 +64,20 @@ function App() {
   const [checkingSession, setCheckingSession] = useState(true);
   const [sessionError, setSessionError] = useState("");
   const [notice, setNotice] = useState<Notice | null>(null);
+  const [theme, setTheme] = useState<Theme>(() =>
+    window.localStorage.getItem("media-backlog-theme") === "light"
+      ? "light"
+      : "dark",
+  );
+
+  useLayoutEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+    window.localStorage.setItem("media-backlog-theme", theme);
+  }, [theme]);
+
+  const toggleTheme = () =>
+    setTheme((current) => (current === "dark" ? "light" : "dark"));
 
   useEffect(() => {
     if (!notice) return;
@@ -87,16 +104,17 @@ function App() {
     return (
       <SignInScreen
         initialError={sessionError}
+        theme={theme}
+        onToggleTheme={toggleTheme}
         onAuthenticated={(authenticatedUser, action) => {
           setSessionError("");
           setNotice({
             tone: "success",
-            title:
-              action === "register" ? "Profile online" : "Session restored",
+            title: action === "register" ? "Account created" : "Signed in",
             message:
               action === "register"
-                ? `Your backlog is ready, ${authenticatedUser.username}.`
-                : `Welcome back, ${authenticatedUser.username}. Your queue is synced.`,
+                ? `Account created for ${authenticatedUser.username}.`
+                : `Signed in as ${authenticatedUser.username}.`,
           });
           setUser(authenticatedUser);
         }}
@@ -108,6 +126,8 @@ function App() {
     <Library
       user={user}
       notice={notice}
+      theme={theme}
+      onToggleTheme={toggleTheme}
       onDismissNotice={() => setNotice(null)}
       onSignedOut={() => {
         setNotice(null);
@@ -128,9 +148,13 @@ function LoadingScreen() {
 
 function SignInScreen({
   initialError,
+  theme,
+  onToggleTheme,
   onAuthenticated,
 }: {
   initialError: string;
+  theme: Theme;
+  onToggleTheme: () => void;
   onAuthenticated: (user: User, action: AuthAction) => void;
 }) {
   const [mode, setMode] = useState<"register" | "login">("register");
@@ -296,6 +320,11 @@ function SignInScreen({
 
   return (
     <main className="auth-page">
+      <ThemeToggle
+        theme={theme}
+        onToggle={onToggleTheme}
+        className="auth-theme-toggle"
+      />
       <section className="auth-story">
         <a
           className="brand auth-brand"
@@ -308,32 +337,22 @@ function SignInScreen({
           <span>Media Backlog</span>
         </a>
         <div>
-          <p className="eyebrow">One queue for every world</p>
-          <h1>
-            Your next obsession
-            <br />
-            is queued.
-          </h1>
-          <p>
-            Track the games, films, series, and books you want to
-            experience—then pick up exactly where you left off.
-          </p>
+          <p className="eyebrow">Your media list</p>
+          <h1>Keep a backlog.</h1>
+          <p>Track games, films, series, and books in one place.</p>
         </div>
-        <p className="auth-footnote">
-          Built for completionists, casual players, and everyone in between.
-        </p>
       </section>
 
       <section className="auth-panel" aria-labelledby="sign-in-title">
         <div className="auth-card">
-          <p className="section-kicker">Player access</p>
+          <p className="section-kicker">Account</p>
           <h2 id="sign-in-title">
             {mode === "register" ? "Create your profile" : "Welcome back"}
           </h2>
           <p className="auth-intro">
             {mode === "register"
-              ? "Save your backlog, sync your progress, and keep every title in reach."
-              : "Sign in to load your backlog and continue where you left off."}
+              ? "Create an account to save your backlog."
+              : "Sign in to view your backlog."}
           </p>
 
           <GoogleButton onCredential={googleSignIn} />
@@ -625,11 +644,15 @@ function GoogleButton({
 function Library({
   user,
   notice,
+  theme,
+  onToggleTheme,
   onDismissNotice,
   onSignedOut,
 }: {
   user: User;
   notice: Notice | null;
+  theme: Theme;
+  onToggleTheme: () => void;
   onDismissNotice: () => void;
   onSignedOut: () => void;
 }) {
@@ -788,6 +811,7 @@ function Library({
                   <Settings size={16} strokeWidth={1.8} aria-hidden="true" />
                   Account settings
                 </button>
+                <ThemeToggle theme={theme} onToggle={onToggleTheme} menuItem />
                 <button type="button" role="menuitem" onClick={signOut}>
                   <LogOut size={16} strokeWidth={1.8} aria-hidden="true" />
                   Sign out
@@ -816,7 +840,6 @@ function Library({
         <section className="library" aria-labelledby="library-title">
           <div className="section-heading">
             <div>
-              <p className="section-kicker">Synced to your profile</p>
               <h2 id="library-title">Backlog</h2>
             </div>
             <label className="search-field">
@@ -892,7 +915,7 @@ function Library({
                       {item.year && <span>{item.year}</span>}
                     </div>
                     <h3>{item.title}</h3>
-                    <p>{item.notes || "No notes logged yet."}</p>
+                    <p>{item.notes || "No notes"}</p>
                     <div className="card-actions">
                       <label>
                         <span className="sr-only">Status for {item.title}</span>
@@ -924,18 +947,9 @@ function Library({
           ) : (
             <div className="empty-state">
               <span aria-hidden="true">◎</span>
-              <h3>
-                {items.length
-                  ? "No matches in this queue"
-                  : "Your queue is empty"}
-              </h3>
-              <p>
-                {items.length
-                  ? "Try another filter, or queue something new."
-                  : "Add the first game, film, series, or book on your radar."}
-              </p>
+              <h3>{items.length ? "No results" : "No items yet"}</h3>
               <button className="text-button" onClick={() => setIsAdding(true)}>
-                Queue a title
+                Add a title
               </button>
             </div>
           )}
@@ -943,7 +957,7 @@ function Library({
       </main>
       <footer>
         <span>Media Backlog</span>
-        <p>Queue synced for {user.email}</p>
+        <p>Signed in as {user.email}</p>
       </footer>
       {isAdding && (
         <AddMediaDialog onAdd={addItem} onClose={() => setIsAdding(false)} />
@@ -1001,10 +1015,7 @@ function AddMediaDialog({
           <X size={21} aria-hidden="true" />
         </button>
         <p className="section-kicker">Add to queue</p>
-        <h2 id="dialog-title">Queue a new title</h2>
-        <p className="dialog-intro">
-          Capture it now. Choose your next session later.
-        </p>
+        <h2 id="dialog-title">Add a title</h2>
         <form onSubmit={submit}>
           <label className="field">
             <span>Title</span>
@@ -1062,7 +1073,7 @@ function AddMediaDialog({
             <textarea
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
-              placeholder="What put this on your radar?"
+              placeholder="Add a note"
               rows={3}
             />
           </label>
@@ -1077,6 +1088,36 @@ function AddMediaDialog({
         </form>
       </section>
     </div>
+  );
+}
+
+function ThemeToggle({
+  theme,
+  onToggle,
+  menuItem = false,
+  className = "",
+}: {
+  theme: Theme;
+  onToggle: () => void;
+  menuItem?: boolean;
+  className?: string;
+}) {
+  const nextTheme = theme === "dark" ? "light" : "dark";
+  const Icon = theme === "dark" ? Sun : Moon;
+
+  return (
+    <button
+      type="button"
+      role={menuItem ? "menuitem" : undefined}
+      className={`${menuItem ? "theme-menu-item" : "theme-toggle"} ${className}`.trim()}
+      onClick={onToggle}
+      aria-label={`Switch to ${nextTheme} mode`}
+    >
+      <Icon size={16} strokeWidth={1.8} aria-hidden="true" />
+      {menuItem && (
+        <span>{nextTheme === "light" ? "Light mode" : "Dark mode"}</span>
+      )}
+    </button>
   );
 }
 

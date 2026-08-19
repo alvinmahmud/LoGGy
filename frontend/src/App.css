@@ -11,7 +11,40 @@
   --surface: #0f1420;
   --surface-raised: #151b2a;
   --danger: #ff6b91;
+  --document-bg: #080a10;
+  --accent-ink: #0a0d12;
+  --active-ink: #090b12;
+  --field-bg: #0d111b;
+  --placeholder: #677187;
+  --topbar-bg: rgba(9, 11, 18, 0.74);
+  --dropdown-bg: rgba(15, 20, 32, 0.98);
+  --disabled: #5f6a7f;
+  --overlay: rgba(3, 5, 9, 0.78);
   --font-display: "Chakra Petch", sans-serif;
+}
+
+html[data-theme="light"] {
+  --ink: #172033;
+  --muted: #66748a;
+  --paper: #f4f7fb;
+  --cream: #e8eef5;
+  --line: #cbd6e4;
+  --orange: #087f99;
+  --forest: #eaf1f7;
+  --cyan: #087f99;
+  --violet: #725fd0;
+  --surface: #ffffff;
+  --surface-raised: #f8fafc;
+  --danger: #c83d61;
+  --document-bg: #f4f7fb;
+  --accent-ink: #ffffff;
+  --active-ink: #ffffff;
+  --field-bg: #ffffff;
+  --placeholder: #7b8799;
+  --topbar-bg: rgba(244, 247, 251, 0.82);
+  --dropdown-bg: rgba(255, 255, 255, 0.98);
+  --disabled: #9aa5b4;
+  --overlay: rgba(31, 42, 58, 0.36);
 }
 #root {
   min-height: 100vh;
@@ -46,7 +79,7 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--line);
-  background: rgba(9, 11, 18, 0.74);
+  background: var(--topbar-bg);
   backdrop-filter: blur(16px);
 }
 .brand {
@@ -74,7 +107,7 @@
   border-radius: 999px;
   padding: 13px 22px;
   background: var(--orange);
-  color: #0a0d12;
+  color: var(--accent-ink);
   font-weight: 700;
   box-shadow: 0 8px 24px rgba(84, 230, 255, 0.12);
   transition:
@@ -165,7 +198,7 @@ h1 {
   color: var(--ink);
 }
 .search-field input::placeholder {
-  color: #677187;
+  color: var(--placeholder);
 }
 .filter-row {
   display: flex;
@@ -194,7 +227,7 @@ h1 {
 }
 .status-tabs button:hover,
 .status-tabs button.active {
-  color: #090b12;
+  color: var(--active-ink);
   background: var(--orange);
   border-color: var(--orange);
   box-shadow: 0 0 18px rgba(84, 230, 255, 0.1);
@@ -205,7 +238,7 @@ h1 {
 .field textarea {
   border: 1px solid var(--line);
   border-radius: 2px;
-  background: #0d111b;
+  background: var(--field-bg);
   color: var(--ink);
   outline: none;
 }
@@ -431,7 +464,7 @@ footer p {
   display: grid;
   place-items: center;
   padding: 20px;
-  background: rgba(3, 5, 9, 0.78);
+  background: var(--overlay);
   backdrop-filter: blur(7px);
 }
 .dialog {
@@ -621,6 +654,35 @@ footer p {
   display: grid;
   grid-template-columns: minmax(430px, 0.92fr) minmax(520px, 1.08fr);
   background: var(--paper);
+  position: relative;
+}
+
+.theme-toggle {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface-raised);
+  color: var(--muted);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+}
+
+.auth-theme-toggle {
+  position: fixed;
+  z-index: 5;
+  top: 22px;
+  right: 22px;
 }
 
 .auth-story {
@@ -1002,7 +1064,7 @@ footer p {
   padding: 6px;
   border: 1px solid var(--line);
   border-radius: 10px 3px 10px 3px;
-  background: rgba(15, 20, 32, 0.98);
+  background: var(--dropdown-bg);
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
   animation: account-menu-in 180ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -1032,7 +1094,7 @@ footer p {
 }
 
 .account-dropdown button:disabled {
-  color: #5f6a7f;
+  color: var(--disabled);
   cursor: not-allowed;
 }
 
@@ -1041,6 +1103,109 @@ footer p {
     opacity: 0;
     transform: translateY(-6px) scale(0.98);
   }
+}
+
+html[data-theme="light"] .app-shell {
+  background:
+    radial-gradient(
+      circle at 82% 8%,
+      rgba(8, 127, 153, 0.09),
+      transparent 28rem
+    ),
+    radial-gradient(
+      circle at 12% 62%,
+      rgba(114, 95, 208, 0.07),
+      transparent 32rem
+    ),
+    var(--paper);
+}
+
+html[data-theme="light"] .brand-mark,
+html[data-theme="light"] .account-initial {
+  border-color: rgba(8, 127, 153, 0.38);
+  background: rgba(8, 127, 153, 0.08);
+}
+
+html[data-theme="light"] .add-button {
+  border-color: var(--cyan);
+  box-shadow: 0 8px 24px rgba(8, 127, 153, 0.14);
+}
+
+html[data-theme="light"] .status-tabs button:hover,
+html[data-theme="light"] .status-tabs button.active {
+  box-shadow: 0 0 18px rgba(8, 127, 153, 0.12);
+}
+
+html[data-theme="light"] .media-card {
+  background: linear-gradient(155deg, #ffffff, #f4f7fb);
+  box-shadow: 0 8px 24px rgba(42, 58, 82, 0.06);
+}
+
+html[data-theme="light"] .media-card:hover {
+  border-color: rgba(8, 127, 153, 0.42);
+  box-shadow: 0 18px 42px rgba(42, 58, 82, 0.13);
+}
+
+html[data-theme="light"] .status-backlog {
+  color: #8a6410;
+}
+
+html[data-theme="light"] .remove-button,
+html[data-theme="light"] .dialog-close,
+html[data-theme="light"] .password-toggle {
+  color: #738096;
+}
+
+html[data-theme="light"] .dialog {
+  box-shadow: 0 30px 80px rgba(42, 58, 82, 0.18);
+}
+
+html[data-theme="light"] .auth-story {
+  background:
+    linear-gradient(rgba(8, 127, 153, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(8, 127, 153, 0.055) 1px, transparent 1px),
+    radial-gradient(
+      circle at 72% 30%,
+      rgba(114, 95, 208, 0.13),
+      transparent 25rem
+    ),
+    #eaf1f7;
+}
+
+html[data-theme="light"] .auth-story::before {
+  border-color: rgba(8, 127, 153, 0.2);
+  box-shadow: 0 0 0 72px rgba(8, 127, 153, 0.025);
+}
+
+html[data-theme="light"] .auth-brand .brand-mark {
+  background: rgba(8, 127, 153, 0.08);
+}
+
+html[data-theme="light"] .auth-story > div > p:last-child {
+  color: #5f6e83;
+}
+
+html[data-theme="light"] .auth-panel {
+  background:
+    radial-gradient(
+      circle at 82% 18%,
+      rgba(8, 127, 153, 0.06),
+      transparent 22rem
+    ),
+    var(--paper);
+}
+
+html[data-theme="light"] .account-mode-tabs button.active {
+  border-color: rgba(8, 127, 153, 0.2);
+  box-shadow: 0 4px 16px rgba(42, 58, 82, 0.1);
+}
+
+html[data-theme="light"] .account-dropdown {
+  box-shadow: 0 18px 48px rgba(42, 58, 82, 0.18);
+}
+
+html[data-theme="light"] .account-dropdown button:hover:not(:disabled) {
+  background: rgba(8, 127, 153, 0.09);
 }
 
 .library-loading {

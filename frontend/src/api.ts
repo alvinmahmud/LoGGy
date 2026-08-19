@@ -15,7 +15,15 @@ export type ApiMediaItem = {
   createdAt: string;
 };
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const configuredApiUrl = (import.meta.env.VITE_API_URL as string | undefined)
+  ?.trim()
+  .replace(/\/$/, "");
+
+const API_URL =
+  configuredApiUrl ||
+  (import.meta.env.DEV
+    ? `${window.location.protocol}//${window.location.hostname}:3000`
+    : window.location.origin);
 
 export class ApiError extends Error {
   status: number;
