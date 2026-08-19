@@ -16,6 +16,7 @@ type RawgGame = {
   id: number;
   name?: string;
   released?: string | null;
+  added?: number;
 };
 
 type TmdbTitle = {
@@ -24,6 +25,11 @@ type TmdbTitle = {
   name?: string;
   release_date?: string;
   first_air_date?: string;
+  popularity?: number;
+};
+
+type TmdbResponse = {
+  results?: TmdbTitle[];
 };
 
 const MAX_RESULTS = 5;
@@ -36,6 +42,26 @@ export class CatalogProviderError extends Error {}
 
 function releaseYear(date?: string | null) {
   return date?.match(/^\d{4}/)?.[0] || "";
+}
+
+function matchesPartialQuery(title: string, query: string) {
+  const titleWords = title.toLocaleLowerCase().match(/[a-z0-9]+/g) || [];
+  const queryWords = query.toLocaleLowerCase().match(/[a-z0-9]+/g) || [];
+  let titleWordIndex = 0;
+
+  for (const queryWord of queryWords) {
+    while (
+      titleWordIndex < titleWords.length &&
+      !titleWords[titleWordIndex].startsWith(queryWord)
+    ) {
+      titleWordIndex += 1;
+    }
+
+    if (titleWordIndex >= titleWords.length) return false;
+    titleWordIndex += 1;
+  }
+
+  return true;
 }
 
 async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
@@ -70,8 +96,8 @@ async function searchGames(query: string): Promise<CatalogSearchResult[]> {
   const params = new URLSearchParams({
     key: apiKey,
     search: query,
-    search_precise: "true",
-    page_size: String(MAX_RESULTS),
+    ordering: "-added",
+    page_size: String(MAX_RESULTS * 3),
   });
   const data = await fetchJson<{ results?: RawgGame[] }>(
     `https://api.rawg.io/api/games?${params.toString()}`,
@@ -79,6 +105,7 @@ async function searchGames(query: string): Promise<CatalogSearchResult[]> {
 
   return (data.results || [])
     .filter((game): game is RawgGame & { name: string } => Boolean(game.name))
+    .sort((a, b) => (b.added || 0) - (a.added || 0))
     .slice(0, MAX_RESULTS)
     .map((game) => ({
       providerId: String(game.id),
@@ -100,21 +127,42 @@ async function searchTmdb(
     );
   }
 
-  const params = new URLSearchParams({
-    query,
-    include_adult: "false",
-    language: "en-US",
-    page: "1",
-  });
+  const fetchTitles = async (searchQuery: string) => {
+    const params = new URLSearchParams({
+      query: searchQuery,
+      include_adult: "false",
+      language: "en-US",
+      page: "1",
+    });
 
-  const data = await fetchJson<{ results?: TmdbTitle[] }>(
-    `https://api.themoviedb.org/3/search/${type}?${params.toString()}`,
-    { headers: { Authorization: `Bearer ${accessToken}` } },
-  );
+    const data = await fetchJson<TmdbResponse>(
+      `https://api.themoviedb.org/3/search/${type}?${params.toString()}`,
+      { headers: { Authorization: `Bearer ${accessToken}` } },
+    );
+
+    return data.results || [];
+  };
+
+  let items = await fetchTitles(query);
+  const queryWords = query.trim().split(/\s+/);
+
+  if (!items.length && queryWords.length > 1) {
+    const fallbackQuery = queryWords.slice(0, -1).join(" ");
+    const fallbackItems = await fetchTitles(fallbackQuery);
+
+    items = fallbackItems.filter((item) => {
+      const title = type === "movie" ? item.title : item.name;
+
+      return Boolean(title && matchesPartialQuery(title, query));
+    });
+  }
 
   const results: CatalogSearchResult[] = [];
+  const sortedItems = [...items].sort(
+    (a, b) => (b.popularity || 0) - (a.popularity || 0),
+  );
 
-  for (const item of data.results || []) {
+  for (const item of sortedItems) {
     const title = type === "movie" ? item.title : item.name;
     const date = type === "movie" ? item.release_date : item.first_air_date;
     if (!title) continue;
