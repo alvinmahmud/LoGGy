@@ -214,7 +214,7 @@ export function LoginPage({
         <div>
           <p className="eyebrow">Your media list</p>
           <h1>Keep a backlog.</h1>
-          <p>Track games, films, series, and books in one place.</p>
+          <p>Track games, movies, and TV shows in one place.</p>
         </div>
       </section>
 

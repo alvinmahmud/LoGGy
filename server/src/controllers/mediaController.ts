@@ -8,7 +8,7 @@ import {
 } from "../services/mediaItemService";
 import { AuthenticatedRequest } from "../middleware/auth";
 
-const mediaTypes = new Set(["movie", "tv", "book", "game"]);
+const mediaTypes = new Set(["game", "movie", "tv"]);
 const statuses = new Set(["backlog", "in progress", "completed"]);
 
 function userId(req: Request) {

@@ -1,17 +1,15 @@
 import type { MediaStatus, MediaType } from "../../types/media";
 
 export const mediaTypeLabels: Record<MediaType, string> = {
-  movie: "Film",
-  tv: "Series",
-  book: "Book",
   game: "Game",
+  movie: "Movie",
+  tv: "TV Show",
 };
 
 export const mediaTypeMarks: Record<MediaType, string> = {
+  game: "✦",
   movie: "●",
   tv: "▰",
-  book: "▥",
-  game: "✦",
 };
 
 export const mediaStatusLabels: Record<MediaStatus, string> = {

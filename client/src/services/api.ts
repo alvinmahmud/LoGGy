@@ -8,7 +8,7 @@ export type User = {
 export type ApiMediaItem = {
   _id: string;
   title: string;
-  type: "movie" | "tv" | "book" | "game";
+  type: "game" | "movie" | "tv";
   status: "backlog" | "in progress" | "completed";
   notes?: string;
   year?: string;

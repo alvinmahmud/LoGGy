@@ -6,7 +6,10 @@ export const createMediaItem = (
 ) => MediaItem.create({ ...data, user: userId });
 
 export const getAllMediaItems = (userId: string) =>
-  MediaItem.find({ user: userId }).sort({ createdAt: -1 });
+  MediaItem.find({
+    user: userId,
+    type: { $in: ["game", "movie", "tv"] },
+  }).sort({ createdAt: -1 });
 
 export const getMediaItemById = (userId: string, id: string) =>
   MediaItem.findOne({ _id: id, user: userId });

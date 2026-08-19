@@ -201,10 +201,9 @@ export function DashboardPage({
                 }
               >
                 <option value="all">All media</option>
-                <option value="movie">Films</option>
-                <option value="tv">Series</option>
-                <option value="book">Books</option>
                 <option value="game">Games</option>
+                <option value="movie">Movies</option>
+                <option value="tv">TV shows</option>
               </select>
             </label>
           </div>

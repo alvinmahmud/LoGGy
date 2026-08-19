@@ -9,7 +9,7 @@ type AddMediaDialogProps = {
 
 export function AddMediaDialog({ onAdd, onClose }: AddMediaDialogProps) {
   const [title, setTitle] = useState("");
-  const [type, setType] = useState<MediaType>("movie");
+  const [type, setType] = useState<MediaType>("game");
   const [status, setStatus] = useState<MediaStatus>("backlog");
   const [year, setYear] = useState("");
   const [notes, setNotes] = useState("");
@@ -69,10 +69,9 @@ export function AddMediaDialog({ onAdd, onClose }: AddMediaDialogProps) {
                 value={type}
                 onChange={(event) => setType(event.target.value as MediaType)}
               >
-                <option value="movie">Film</option>
-                <option value="tv">Series</option>
-                <option value="book">Book</option>
                 <option value="game">Game</option>
+                <option value="movie">Movie</option>
+                <option value="tv">TV show</option>
               </select>
             </label>
             <label className="field">
