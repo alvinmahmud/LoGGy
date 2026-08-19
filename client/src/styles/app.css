@@ -254,11 +254,14 @@ h1 {
 }
 .queue-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
 }
 .queue-item-card {
   min-width: 0;
+  height: 370px;
+  display: flex;
+  flex-direction: column;
   background: linear-gradient(
     155deg,
     rgba(21, 27, 42, 0.94),
@@ -283,12 +286,24 @@ h1 {
   }
 }
 .card-visual {
-  height: 174px;
-  padding: 20px;
+  height: 142px;
+  flex: 0 0 142px;
+  padding: 16px;
   position: relative;
   display: grid;
   place-items: center;
   overflow: hidden;
+}
+.card-artwork {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 280ms ease;
+}
+.queue-item-card:hover .card-artwork {
+  transform: scale(1.035);
 }
 .tone-movie .card-visual {
   background: linear-gradient(145deg, #6c1d47, #231329);
@@ -318,6 +333,22 @@ h1 {
   left: -45px;
   bottom: -52px;
 }
+.card-visual.has-image::before {
+  z-index: 1;
+  inset: 0;
+  width: auto;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(7, 10, 18, 0.08) 35%,
+    rgba(7, 10, 18, 0.82) 100%
+  );
+}
+.card-visual.has-image::after {
+  display: none;
+}
 .item-initial {
   font-family: var(--font-display);
   color: rgba(255, 255, 255, 0.94);
@@ -330,6 +361,8 @@ h1 {
   top: 14px;
   color: rgba(255, 255, 255, 0.88);
   font-size: 15px;
+  z-index: 2;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.72);
 }
 .visual-type {
   position: absolute;
@@ -339,9 +372,15 @@ h1 {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.16em;
+  z-index: 2;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.82);
 }
 .card-content {
-  padding: 23px 22px 20px;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 17px 18px 16px;
 }
 .card-meta {
   display: flex;
@@ -357,26 +396,36 @@ h1 {
   margin-right: 8px;
 }
 .card-content h3 {
-  margin: 9px 0 7px;
+  min-height: 44px;
+  margin: 7px 0 5px;
   font-family: var(--font-display);
   color: var(--ink);
-  font-size: 25px;
+  font-size: 21px;
   line-height: 1.08;
   font-weight: 400;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 .card-content p {
-  min-height: 42px;
-  margin: 0 0 20px;
+  min-height: 38px;
+  margin: 0 0 12px;
   color: var(--muted);
   font-size: 13px;
   line-height: 1.55;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 .card-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  padding-top: 16px;
+  margin-top: auto;
+  padding-top: 12px;
   border-top: 1px solid var(--line);
 }
 .status-select {
@@ -634,6 +683,11 @@ footer p {
   white-space: nowrap;
   border: 0;
 }
+@media (max-width: 1180px) {
+  .queue-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
 @media (max-width: 900px) {
   .queue-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -677,7 +731,8 @@ footer p {
     grid-template-columns: 1fr;
   }
   .card-visual {
-    height: 155px;
+    height: 138px;
+    flex-basis: 138px;
   }
   footer {
     width: auto;

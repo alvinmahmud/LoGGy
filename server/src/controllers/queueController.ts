@@ -10,6 +10,7 @@ import { AuthenticatedRequest } from "../middleware/auth";
 
 const queueItemTypes = new Set(["game", "movie", "tv"]);
 const statuses = new Set(["backlog", "in progress", "completed"]);
+const imageHosts = new Set(["image.tmdb.org", "media.rawg.io"]);
 
 function userId(req: Request) {
   return (req as AuthenticatedRequest).auth.userId;
@@ -54,6 +55,30 @@ function queueItemInput(body: unknown, partial = false) {
       return null;
     }
     result.year = value.year;
+  }
+  if (value.imageUrl !== undefined) {
+    if (typeof value.imageUrl !== "string") {
+      return null;
+    }
+
+    const imageUrl = value.imageUrl.trim();
+
+    if (imageUrl) {
+      try {
+        const parsedImageUrl = new URL(imageUrl);
+
+        if (
+          parsedImageUrl.protocol !== "https:" ||
+          !imageHosts.has(parsedImageUrl.hostname)
+        ) {
+          return null;
+        }
+      } catch {
+        return null;
+      }
+
+      result.imageUrl = imageUrl;
+    }
   }
 
   return result;

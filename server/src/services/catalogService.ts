@@ -5,6 +5,7 @@ export type CatalogSearchResult = {
   title: string;
   type: CatalogType;
   year: string;
+  imageUrl: string;
 };
 
 type CacheEntry = {
@@ -17,6 +18,7 @@ type RawgGame = {
   name?: string;
   released?: string | null;
   added?: number;
+  background_image?: string | null;
 };
 
 type TmdbTitle = {
@@ -26,6 +28,8 @@ type TmdbTitle = {
   release_date?: string;
   first_air_date?: string;
   popularity?: number;
+  backdrop_path?: string | null;
+  poster_path?: string | null;
 };
 
 type TmdbResponse = {
@@ -112,6 +116,7 @@ async function searchGames(query: string): Promise<CatalogSearchResult[]> {
       title: game.name,
       type: "game",
       year: releaseYear(game.released),
+      imageUrl: game.background_image || "",
     }));
 }
 
@@ -171,6 +176,10 @@ async function searchTmdb(
       title,
       type,
       year: releaseYear(date),
+      imageUrl:
+        item.backdrop_path || item.poster_path
+          ? `https://image.tmdb.org/t/p/w780${item.backdrop_path || item.poster_path}`
+          : "",
     });
   }
 

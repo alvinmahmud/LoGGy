@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import { X } from "lucide-react";
 import type { QueueItem } from "../../services/api";
 import type { QueueItemStatus } from "../../types/queue";
@@ -17,16 +17,32 @@ export function QueueItemCard({
   onStatusChange,
   onRemove,
 }: QueueItemCardProps) {
+  const [imageUnavailable, setImageUnavailable] = useState(false);
+  const showImage = Boolean(item.imageUrl && !imageUnavailable);
+
   return (
     <article
       className={`queue-item-card tone-${item.type}`}
       style={{ "--delay": `${index * 45}ms` } as CSSProperties}
     >
-      <div className="card-visual" aria-hidden="true">
+      <div
+        className={`card-visual${showImage ? " has-image" : ""}`}
+        aria-hidden="true"
+      >
+        {showImage && (
+          <img
+            className="card-artwork"
+            src={item.imageUrl}
+            alt=""
+            onError={() => setImageUnavailable(true)}
+          />
+        )}
         <span className="item-mark">{queueItemTypeMarks[item.type]}</span>
-        <span className="item-initial">
-          {item.title.charAt(0).toUpperCase()}
-        </span>
+        {!showImage && (
+          <span className="item-initial" aria-hidden="true">
+            {item.title.charAt(0).toUpperCase()}
+          </span>
+        )}
         <span className="visual-type">{queueItemTypeLabels[item.type]}</span>
       </div>
       <div className="card-content">

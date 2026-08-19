@@ -20,6 +20,7 @@ export function AddQueueItemDialog({
   const [type, setType] = useState<QueueItemType>("game");
   const [status, setStatus] = useState<QueueItemStatus>("backlog");
   const [year, setYear] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
   const [suggestions, setSuggestions] = useState<CatalogSearchResult[]>([]);
@@ -69,6 +70,7 @@ export function AddQueueItemDialog({
   function selectSuggestion(suggestion: CatalogSearchResult) {
     setTitle(suggestion.title);
     setYear(suggestion.year);
+    setImageUrl(suggestion.imageUrl);
     setSelectedSuggestion(true);
     setSuggestions([]);
     setSearchState("idle");
@@ -114,6 +116,7 @@ export function AddQueueItemDialog({
         status,
         year: year.trim(),
         notes: notes.trim(),
+        imageUrl: imageUrl || undefined,
       });
     } finally {
       setSaving(false);
@@ -164,6 +167,7 @@ export function AddQueueItemDialog({
                 onFocus={() => setTitleFocused(true)}
                 onChange={(event) => {
                   setTitle(event.target.value);
+                  setImageUrl("");
                   setSelectedSuggestion(false);
                   setTitleFocused(true);
                 }}
@@ -229,6 +233,7 @@ export function AddQueueItemDialog({
                 value={type}
                 onChange={(event) => {
                   setType(event.target.value as QueueItemType);
+                  setImageUrl("");
                   setSelectedSuggestion(false);
                   setSuggestions([]);
                   setSearchState("idle");

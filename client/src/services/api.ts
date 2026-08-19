@@ -12,6 +12,7 @@ export type QueueItem = {
   status: "backlog" | "in progress" | "completed";
   notes?: string;
   year?: string;
+  imageUrl?: string;
   createdAt: string;
 };
 
@@ -20,6 +21,7 @@ export type CatalogSearchResult = {
   title: string;
   type: QueueItem["type"];
   year: string;
+  imageUrl: string;
 };
 
 const configuredApiUrl = (import.meta.env.VITE_API_URL as string | undefined)

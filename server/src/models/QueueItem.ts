@@ -21,6 +21,7 @@ const queueItemSchema = new mongoose.Schema(
     },
     notes: { type: String },
     year: { type: String, match: /^\d{4}$/ },
+    imageUrl: { type: String },
   },
   { timestamps: true },
 );
