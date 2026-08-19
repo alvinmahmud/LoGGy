@@ -15,6 +15,13 @@ export type QueueItem = {
   createdAt: string;
 };
 
+export type CatalogSearchResult = {
+  providerId: string;
+  title: string;
+  type: QueueItem["type"];
+  year: string;
+};
+
 const configuredApiUrl = (import.meta.env.VITE_API_URL as string | undefined)
   ?.trim()
   .replace(/\/$/, "");
@@ -46,6 +53,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     const body = await response.json().catch(() => null);
+
     throw new ApiError(
       body?.message || "The request could not be completed",
       response.status,
@@ -76,6 +84,7 @@ export const authApi = {
     const query = new URLSearchParams();
     if (values.username) query.set("username", values.username);
     if (values.email) query.set("email", values.email);
+
     return request<{
       usernameAvailable: boolean | null;
       emailAvailable: boolean | null;
@@ -98,4 +107,15 @@ export const queueApi = {
     }),
   remove: (id: string) =>
     request<void>(`/api/queue/${id}`, { method: "DELETE" }),
+};
+
+export const catalogApi = {
+  search: (query: string, type: QueueItem["type"], signal?: AbortSignal) => {
+    const params = new URLSearchParams({ q: query, type });
+
+    return request<{ results: CatalogSearchResult[] }>(
+      `/api/catalog/search?${params.toString()}`,
+      { signal },
+    );
+  },
 };

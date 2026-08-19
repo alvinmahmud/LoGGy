@@ -9,10 +9,14 @@ export function GoogleSignInButton({ onCredential }: GoogleSignInButtonProps) {
   const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
 
   useEffect(() => {
-    if (!clientId || !buttonRef.current) return;
+    if (!clientId || !buttonRef.current) {
+      return;
+    }
 
     const render = () => {
-      if (!window.google || !buttonRef.current) return;
+      if (!window.google || !buttonRef.current) {
+        return;
+      }
 
       buttonRef.current.replaceChildren();
       window.google.accounts.id.initialize({
@@ -35,7 +39,7 @@ export function GoogleSignInButton({ onCredential }: GoogleSignInButtonProps) {
     if (existingScript) {
       existingScript.addEventListener("load", render);
       render();
-      
+
       return () => existingScript.removeEventListener("load", render);
     }
 

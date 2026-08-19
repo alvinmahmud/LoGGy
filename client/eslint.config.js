@@ -19,6 +19,17 @@ export default tseslint.config(
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      'padding-line-between-statements': [
+        'error',
+        { blankLine: 'always', prev: '*', next: 'return' },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'IfStatement > ReturnStatement.consequent',
+          message: 'Wrap early returns in braces so return spacing stays consistent.',
+        },
+      ],
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },

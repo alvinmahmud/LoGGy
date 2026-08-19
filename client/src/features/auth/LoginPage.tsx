@@ -54,6 +54,7 @@ export function LoginPage({
     const normalizedUsername = username.trim();
     if (!usernamePattern.test(normalizedUsername)) {
       setUsernameAvailability("idle");
+
       return;
     }
 
@@ -72,6 +73,7 @@ export function LoginPage({
     const normalizedEmail = email.trim().toLowerCase();
     if (!emailPattern.test(normalizedEmail)) {
       setEmailAvailability("idle");
+
       return;
     }
 

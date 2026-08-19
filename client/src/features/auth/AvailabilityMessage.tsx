@@ -11,7 +11,9 @@ export function AvailabilityMessage({
   field,
   idleMessage,
 }: AvailabilityMessageProps) {
-  if (state === "idle" && !idleMessage) return null;
+  if (state === "idle" && !idleMessage) {
+    return null;
+  }
 
   const label = field === "username" ? "Username" : "Email";
   const message =

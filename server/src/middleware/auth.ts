@@ -13,6 +13,7 @@ function getJwtSecret() {
     return "loggy-local-development-secret-change-before-production";
   }
   if (!secret) throw new Error("JWT_SECRET is not configured");
+
   return secret;
 }
 
@@ -40,6 +41,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
 
   if (!token) {
     res.status(401).json({ message: "Authentication required" });
+
     return;
   }
 

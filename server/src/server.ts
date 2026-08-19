@@ -4,6 +4,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import authRoutes from "./routes/authRoutes";
+import catalogRoutes from "./routes/catalogRoutes";
 import queueRoutes from "./routes/queueRoutes";
 
 dotenv.config();
@@ -35,6 +36,7 @@ app.get("/health", (_req: Request, res: Response) => {
   });
 });
 app.use("/api/auth", authRoutes);
+app.use("/api/catalog", catalogRoutes);
 app.use("/api/queue", queueRoutes);
 
 const uri =

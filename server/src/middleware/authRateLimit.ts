@@ -37,3 +37,4 @@ function createRateLimit(maxAttempts: number) {
 
 export const authRateLimit = createRateLimit(12);
 export const availabilityRateLimit = createRateLimit(60);
+export const catalogRateLimit = createRateLimit(300);

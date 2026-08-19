@@ -13,7 +13,9 @@ export function Logo({ href, className = "" }: LogoProps) {
     </>
   );
 
-  if (!href) return <span className={`brand ${className}`.trim()}>{content}</span>;
+  if (!href) {
+    return <span className={`brand ${className}`.trim()}>{content}</span>;
+  }
 
   return (
     <a

@@ -65,6 +65,7 @@ export function DashboardPage({
 
   const filteredItems = useMemo(() => {
     const query = search.trim().toLowerCase();
+
     return items
       .filter((item) => typeFilter === "all" || item.type === typeFilter)
       .filter((item) => statusFilter === "all" || item.status === statusFilter)

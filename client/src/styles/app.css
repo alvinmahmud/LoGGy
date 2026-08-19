@@ -512,7 +512,8 @@ footer p {
   display: grid;
   gap: 8px;
 }
-.field > span {
+.field > span,
+.field > label {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
@@ -536,6 +537,79 @@ footer p {
 .field textarea:focus {
   border-color: var(--cyan);
   box-shadow: 0 0 0 2px rgba(92, 225, 255, 0.1);
+}
+.catalog-search {
+  position: relative;
+}
+.catalog-suggestions {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 7px);
+  right: 0;
+  left: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 3px 3px 11px 3px;
+  background: var(--dropdown-bg);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(18px);
+  animation: catalog-results-in 160ms ease both;
+}
+.catalog-suggestions [role="listbox"] {
+  max-height: 228px;
+  overflow-y: auto;
+}
+.catalog-suggestions button {
+  width: 100%;
+  padding: 11px 13px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+}
+.catalog-suggestions button:hover,
+.catalog-suggestions button.active {
+  background: rgba(84, 230, 255, 0.1);
+}
+.catalog-suggestions button span {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.catalog-suggestions button small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.catalog-message {
+  margin: 0;
+  padding: 13px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.catalog-credit {
+  display: block;
+  padding: 8px 13px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: right;
+  text-transform: uppercase;
+}
+.catalog-credit:hover {
+  color: var(--cyan);
+}
+@keyframes catalog-results-in {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
 }
 .dialog-actions {
   display: flex;
@@ -1152,6 +1226,15 @@ html[data-theme="light"] .password-toggle {
 
 html[data-theme="light"] .dialog {
   box-shadow: 0 30px 80px rgba(42, 58, 82, 0.18);
+}
+
+html[data-theme="light"] .catalog-suggestions {
+  box-shadow: 0 18px 46px rgba(42, 58, 82, 0.18);
+}
+
+html[data-theme="light"] .catalog-suggestions button:hover,
+html[data-theme="light"] .catalog-suggestions button.active {
+  background: rgba(8, 127, 153, 0.09);
 }
 
 html[data-theme="light"] .auth-story {

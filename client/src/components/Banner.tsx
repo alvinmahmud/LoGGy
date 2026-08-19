@@ -26,7 +26,9 @@ export function Banner({
   }, [onDismiss]);
 
   useEffect(() => {
-    if (!dismissRef.current || duration <= 0) return;
+    if (!dismissRef.current || duration <= 0) {
+      return;
+    }
 
     const timeout = window.setTimeout(() => dismissRef.current?.(), duration);
 

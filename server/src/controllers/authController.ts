@@ -92,16 +92,19 @@ export async function register(req: Request, res: Response) {
       message:
         "Username must be 3–24 characters using letters, numbers, or underscores",
     });
+
     return;
   }
   if (email.length > 254 || !emailPattern.test(email)) {
     res.status(400).json({ message: "Enter a valid email address" });
+
     return;
   }
   if (!validPassword(password)) {
     res
       .status(400)
       .json({ message: "Password must be between 10 and 128 characters" });
+
     return;
   }
 
@@ -141,6 +144,7 @@ export async function register(req: Request, res: Response) {
       res
         .status(409)
         .json({ message: "That email or username is already in use" });
+
       return;
     }
 
@@ -182,8 +186,9 @@ async function availableGoogleUsername(name: string, email: string) {
   let candidate = base;
 
   for (let attempt = 0; attempt < 20; attempt += 1) {
-    if (!(await User.exists({ usernameKey: candidate.toLowerCase() })))
+    if (!(await User.exists({ usernameKey: candidate.toLowerCase() }))) {
       return candidate;
+    }
     candidate = `${base.slice(0, 18)}${Math.floor(1000 + Math.random() * 9000)}`;
   }
 
@@ -263,6 +268,7 @@ export async function getCurrentUser(req: Request, res: Response) {
   if (!user) {
     res.clearCookie(SESSION_COOKIE, sessionCookieOptions());
     res.status(401).json({ message: "User no longer exists" });
+
     return;
   }
   res.json({ user: publicUser(user) });

@@ -28,7 +28,9 @@ function App() {
       .finally(() => setCheckingSession(false));
   }, []);
 
-  if (checkingSession) return <LoadingScreen />;
+  if (checkingSession) {
+    return <LoadingScreen />;
+  }
 
   if (!user) {
     return (
