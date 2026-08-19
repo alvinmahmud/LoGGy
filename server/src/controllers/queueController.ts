@@ -76,9 +76,9 @@ function queueItemInput(body: unknown, partial = false) {
       } catch {
         return null;
       }
-
-      result.imageUrl = imageUrl;
     }
+
+    result.imageUrl = imageUrl;
   }
 
   return result;

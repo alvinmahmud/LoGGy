@@ -6,7 +6,11 @@ import {
   useState,
 } from "react";
 import { X } from "lucide-react";
-import { catalogApi, type CatalogSearchResult } from "../../services/api";
+import {
+  catalogApi,
+  type CatalogSearchResult,
+  type QueueItem,
+} from "../../services/api";
 import type {
   NewQueueItem,
   QueueItemStatus,
@@ -14,27 +18,32 @@ import type {
 } from "../../types/queue";
 
 type AddQueueItemDialogProps = {
-  onAdd: (item: NewQueueItem) => Promise<void>;
+  item?: QueueItem;
+  onSave: (item: NewQueueItem) => Promise<void>;
   onClose: () => void;
 };
 
 export function AddQueueItemDialog({
-  onAdd,
+  item,
+  onSave,
   onClose,
 }: AddQueueItemDialogProps) {
-  const [title, setTitle] = useState("");
-  const [type, setType] = useState<QueueItemType>("game");
-  const [status, setStatus] = useState<QueueItemStatus>("backlog");
-  const [year, setYear] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [notes, setNotes] = useState("");
+  const editing = Boolean(item);
+  const [title, setTitle] = useState(item?.title || "");
+  const [type, setType] = useState<QueueItemType>(item?.type || "game");
+  const [status, setStatus] = useState<QueueItemStatus>(
+    item?.status || "backlog",
+  );
+  const [year, setYear] = useState(item?.year || "");
+  const [imageUrl, setImageUrl] = useState(item?.imageUrl || "");
+  const [notes, setNotes] = useState(item?.notes || "");
   const [saving, setSaving] = useState(false);
   const [suggestions, setSuggestions] = useState<CatalogSearchResult[]>([]);
   const [searchState, setSearchState] = useState<
     "idle" | "loading" | "ready" | "error"
   >("idle");
   const [titleFocused, setTitleFocused] = useState(false);
-  const [selectedSuggestion, setSelectedSuggestion] = useState(false);
+  const [selectedSuggestion, setSelectedSuggestion] = useState(Boolean(item));
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
   const suggestionRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
@@ -125,13 +134,13 @@ export function AddQueueItemDialog({
     setSaving(true);
 
     try {
-      await onAdd({
+      await onSave({
         title: title.trim(),
         type,
         status,
         year: year.trim(),
         notes: notes.trim(),
-        imageUrl: imageUrl || undefined,
+        imageUrl: editing ? imageUrl : imageUrl || undefined,
       });
     } finally {
       setSaving(false);
@@ -154,8 +163,10 @@ export function AddQueueItemDialog({
         >
           <X size={21} aria-hidden="true" />
         </button>
-        <p className="section-kicker">Add to queue</p>
-        <h2 id="dialog-title">Add a title</h2>
+        <p className="section-kicker">
+          {editing ? "Edit queue item" : "Add to queue"}
+        </p>
+        <h2 id="dialog-title">{editing ? "Edit title" : "Add a title"}</h2>
         <form onSubmit={submit}>
           <div className="field">
             <label htmlFor="queue-title">Title</label>
@@ -306,7 +317,7 @@ export function AddQueueItemDialog({
               Cancel
             </button>
             <button type="submit" className="add-button" disabled={saving}>
-              {saving ? "Saving…" : "Add to queue"}
+              {saving ? "Saving…" : editing ? "Save changes" : "Add to queue"}
             </button>
           </div>
         </form>

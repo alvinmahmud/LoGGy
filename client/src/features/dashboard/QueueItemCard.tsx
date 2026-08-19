@@ -8,13 +8,15 @@ type QueueItemCardProps = {
   item: QueueItem;
   index: number;
   onStatusChange: (id: string, status: QueueItemStatus) => void;
-  onRemove: (id: string) => void;
+  onEdit: (item: QueueItem) => void;
+  onRemove: (item: QueueItem) => void;
 };
 
 export function QueueItemCard({
   item,
   index,
   onStatusChange,
+  onEdit,
   onRemove,
 }: QueueItemCardProps) {
   const [imageUnavailable, setImageUnavailable] = useState(false);
@@ -25,6 +27,12 @@ export function QueueItemCard({
       className={`queue-item-card tone-${item.type}`}
       style={{ "--delay": `${index * 45}ms` } as CSSProperties}
     >
+      <button
+        type="button"
+        className="card-edit-target"
+        onClick={() => onEdit(item)}
+        aria-label={`Edit ${item.title}`}
+      />
       <div
         className={`card-visual${showImage ? " has-image" : ""}`}
         aria-hidden="true"
@@ -68,7 +76,7 @@ export function QueueItemCard({
           </label>
           <button
             className="remove-button"
-            onClick={() => onRemove(item._id)}
+            onClick={() => onRemove(item)}
             aria-label={`Remove ${item.title}`}
             title="Remove item"
           >

@@ -7,6 +7,7 @@ import {
   type User,
 } from "../../services/api";
 import { Banner } from "../../components/Banner";
+import { ConfirmDialog } from "../../components/ConfirmDialog";
 import { Logo } from "../../components/Logo";
 import type {
   NewQueueItem,
@@ -45,6 +46,10 @@ export function DashboardPage({
     "all",
   );
   const [isAdding, setIsAdding] = useState(false);
+  const [editingItem, setEditingItem] = useState<QueueItem | null>(null);
+  const [itemPendingRemoval, setItemPendingRemoval] =
+    useState<QueueItem | null>(null);
+  const [removing, setRemoving] = useState(false);
 
   useEffect(() => {
     queueApi
@@ -115,15 +120,40 @@ export function DashboardPage({
     }
   }
 
-  async function removeItem(id: string) {
+  async function editItem(changes: NewQueueItem) {
+    if (!editingItem) {
+      return;
+    }
+
     try {
-      await queueApi.remove(id);
-      setItems((current) => current.filter((item) => item._id !== id));
+      const updated = await queueApi.update(editingItem._id, changes);
+      setItems((current) =>
+        current.map((item) => (item._id === editingItem._id ? updated : item)),
+      );
+      setEditingItem(null);
       setError("");
     } catch (caught) {
       setError(
+        caught instanceof Error ? caught.message : "Could not update the item",
+      );
+    }
+  }
+
+  async function removeItem(id: string) {
+    setRemoving(true);
+
+    try {
+      await queueApi.remove(id);
+      setItems((current) => current.filter((item) => item._id !== id));
+      setItemPendingRemoval(null);
+      setError("");
+    } catch (caught) {
+      setItemPendingRemoval(null);
+      setError(
         caught instanceof Error ? caught.message : "Could not remove the item",
       );
+    } finally {
+      setRemoving(false);
     }
   }
 
@@ -148,7 +178,10 @@ export function DashboardPage({
           />
           <button
             className="add-button compact"
-            onClick={() => setIsAdding(true)}
+            onClick={() => {
+              setEditingItem(null);
+              setIsAdding(true);
+            }}
           >
             <Plus size={17} strokeWidth={2} aria-hidden="true" /> Queue title
           </button>
@@ -221,14 +254,15 @@ export function DashboardPage({
           {loading ? (
             <div className="library-loading">Loading your backlog…</div>
           ) : filteredItems.length ? (
-            <div className="queue-grid">
+            <div className="queue-grid" key={`${statusFilter}-${typeFilter}`}>
               {filteredItems.map((item, index) => (
                 <QueueItemCard
                   key={item._id}
                   item={item}
                   index={index}
                   onStatusChange={updateStatus}
-                  onRemove={removeItem}
+                  onEdit={setEditingItem}
+                  onRemove={setItemPendingRemoval}
                 />
               ))}
             </div>
@@ -253,8 +287,26 @@ export function DashboardPage({
 
       {isAdding && (
         <AddQueueItemDialog
-          onAdd={addItem}
+          onSave={addItem}
           onClose={() => setIsAdding(false)}
+        />
+      )}
+      {editingItem && (
+        <AddQueueItemDialog
+          key={editingItem._id}
+          item={editingItem}
+          onSave={editItem}
+          onClose={() => setEditingItem(null)}
+        />
+      )}
+      {itemPendingRemoval && (
+        <ConfirmDialog
+          title={`Remove “${itemPendingRemoval.title}”?`}
+          message="This will permanently remove it from your backlog."
+          confirmLabel="Remove"
+          busy={removing}
+          onConfirm={() => removeItem(itemPendingRemoval._id)}
+          onClose={() => setItemPendingRemoval(null)}
         />
       )}
     </div>

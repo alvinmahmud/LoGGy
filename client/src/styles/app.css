@@ -258,6 +258,7 @@ h1 {
   gap: 16px;
 }
 .queue-item-card {
+  position: relative;
   min-width: 0;
   height: 370px;
   display: flex;
@@ -273,6 +274,18 @@ h1 {
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
+}
+.card-edit-target {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.card-edit-target:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
 }
 .queue-item-card:hover {
   transform: translateY(-4px);
@@ -411,6 +424,8 @@ h1 {
   -webkit-line-clamp: 2;
 }
 .card-actions {
+  position: relative;
+  z-index: 3;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -531,6 +546,20 @@ footer p {
 }
 .dialog h2 {
   font-size: 48px;
+}
+.confirmation-dialog {
+  width: min(100%, 450px);
+  padding-bottom: 34px;
+}
+.confirmation-dialog h2 {
+  padding-right: 24px;
+  font-size: 34px;
+  line-height: 1.08;
+}
+.confirmation-message {
+  margin: 14px 0 6px;
+  color: var(--muted);
+  line-height: 1.55;
 }
 .dialog-close {
   position: absolute;
@@ -664,6 +693,30 @@ footer p {
   background: transparent;
   padding: 12px 15px;
   color: var(--muted);
+}
+.danger-button {
+  min-width: 108px;
+  padding: 12px 18px;
+  border: 1px solid rgba(255, 107, 145, 0.72);
+  border-radius: 999px;
+  background: rgba(255, 107, 145, 0.12);
+  color: var(--danger);
+  font-weight: 700;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+.danger-button:hover:not(:disabled) {
+  background: var(--danger);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+.danger-button:disabled,
+.cancel-button:disabled,
+.dialog-close:disabled {
+  cursor: wait;
+  opacity: 0.56;
 }
 .sr-only {
   position: absolute !important;
