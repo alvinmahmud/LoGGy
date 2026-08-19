@@ -1,4 +1,10 @@
-import { type FormEvent, type KeyboardEvent, useEffect, useState } from "react";
+import {
+  type FormEvent,
+  type KeyboardEvent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { X } from "lucide-react";
 import { catalogApi, type CatalogSearchResult } from "../../services/api";
 import type {
@@ -30,6 +36,15 @@ export function AddQueueItemDialog({
   const [titleFocused, setTitleFocused] = useState(false);
   const [selectedSuggestion, setSelectedSuggestion] = useState(false);
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
+  const suggestionRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  useEffect(() => {
+    if (activeSuggestion >= 0) {
+      suggestionRefs.current[activeSuggestion]?.scrollIntoView({
+        block: "nearest",
+      });
+    }
+  }, [activeSuggestion]);
 
   useEffect(() => {
     const query = title.trim();
@@ -199,6 +214,9 @@ export function AddQueueItemDialog({
                           role="option"
                           aria-selected={activeSuggestion === index}
                           className={activeSuggestion === index ? "active" : ""}
+                          ref={(element) => {
+                            suggestionRefs.current[index] = element;
+                          }}
                           onMouseDown={(event) => event.preventDefault()}
                           onMouseEnter={() => setActiveSuggestion(index)}
                           onClick={() => selectSuggestion(suggestion)}

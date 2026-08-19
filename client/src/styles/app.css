@@ -355,15 +355,6 @@ h1 {
   font-size: 88px;
   line-height: 1;
 }
-.item-mark {
-  position: absolute;
-  left: 18px;
-  top: 14px;
-  color: rgba(255, 255, 255, 0.88);
-  font-size: 15px;
-  z-index: 2;
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.72);
-}
 .visual-type {
   position: absolute;
   right: 18px;
@@ -607,6 +598,8 @@ footer p {
 .catalog-suggestions [role="listbox"] {
   max-height: 228px;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 .catalog-suggestions button {
   width: 100%;

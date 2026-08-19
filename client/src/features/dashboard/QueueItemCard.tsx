@@ -2,7 +2,7 @@ import { useState, type CSSProperties } from "react";
 import { X } from "lucide-react";
 import type { QueueItem } from "../../services/api";
 import type { QueueItemStatus } from "../../types/queue";
-import { queueItemTypeLabels, queueItemTypeMarks } from "./queueItemConstants";
+import { queueItemTypeLabels } from "./queueItemConstants";
 
 type QueueItemCardProps = {
   item: QueueItem;
@@ -37,7 +37,6 @@ export function QueueItemCard({
             onError={() => setImageUnavailable(true)}
           />
         )}
-        <span className="item-mark">{queueItemTypeMarks[item.type]}</span>
         {!showImage && (
           <span className="item-initial" aria-hidden="true">
             {item.title.charAt(0).toUpperCase()}

@@ -6,12 +6,6 @@ export const queueItemTypeLabels: Record<QueueItemType, string> = {
   tv: "TV Show",
 };
 
-export const queueItemTypeMarks: Record<QueueItemType, string> = {
-  game: "✦",
-  movie: "●",
-  tv: "▰",
-};
-
 export const queueItemStatusLabels: Record<QueueItemStatus, string> = {
   backlog: "Backlog",
   "in progress": "In progress",
